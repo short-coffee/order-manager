@@ -1,12 +1,16 @@
-import { useState } from 'react'
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import DashboardPage from './pages/DashboardPage';
 
 function App() {
     return (
-        <div className="app-container">
-            <h1>Cafeteria Order Manager</h1>
-            <p>System initialized.</p>
-        </div>
-    )
+        <BrowserRouter>
+            <Routes>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
-export default App
+export default App;
