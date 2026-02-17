@@ -25,14 +25,14 @@ export const MENU_DATA = [
         name: "Freddo Cappuccino",
         category: "Καφέδες",
         price: 2.50,
-        image: "https://images.unsplash.com/photo-1551030173-122adbc4327c?auto=format&fit=crop&q=80&w=200"
+        image: "https://www.dailycious.gr/wp-content/uploads/2016/07/freddo-cappuccino.jpg"
     },
     {
         id: 5,
         name: "Τυρόπιτα",
         category: "Σνακ",
         price: 1.80,
-        image: "https://images.unsplash.com/photo-1601050690597-df056fb27097?auto=format&fit=crop&q=80&w=200"
+        image: "https://tasty.athinorama.gr/Content/ImagesDatabase/p/696x696/crop/both/lmnts/articles/2524533/tyropita2.jpg"
     },
     {
         id: 6,
