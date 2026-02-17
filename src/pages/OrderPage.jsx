@@ -138,16 +138,16 @@ const OrderPage = () => {
             <header className="customer-header glass">
                 <div className="header-content">
                     <div className="logo-container animate-fade-in">
-                        <div className="logo-circle">
-                            <img
-                                src="logo.png"
-                                alt="Shop Logo"
-                                className="logo-img"
-                            />
-                        </div>
+                        <img
+                            src="logo.png"
+                            alt="Shop Logo"
+                            className="logo-img"
+                        />
                     </div>
-                    <h1>Menu</h1>
-                    <p>Premium Coffee & Snacks</p>
+                    <div className="header-titles">
+                        <h1>BLACK BEAR</h1>
+                        <p>COFFEE BAR</p>
+                    </div>
                 </div>
             </header>
 
