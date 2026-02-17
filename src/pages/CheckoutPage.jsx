@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -8,12 +8,42 @@ const CheckoutPage = () => {
     const { cart = [], totalPrice = 0 } = location.state || {};
 
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
         address: '',
+        bell: '',
+        floor: '',
         comments: ''
     });
+
+    useEffect(() => {
+        // Guard: Αν δεν υπάρχει καλάθι
+        if (cart.length === 0) {
+            navigate('/');
+            return;
+        }
+
+        // Real-time Shop Status Check
+        const subscription = supabase
+            .channel('checkout-status')
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'settings',
+                filter: 'key=eq.is_ordering_enabled'
+            }, (payload) => {
+                if (payload.new.value === false) {
+                    navigate('/', { replace: true });
+                }
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
+    }, [cart, navigate]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -25,6 +55,20 @@ const CheckoutPage = () => {
         setLoading(true);
 
         try {
+            // 0. Double check if ordering is still enabled
+            const { data: statusData } = await supabase
+                .from('settings')
+                .select('value')
+                .eq('key', 'is_ordering_enabled')
+                .single();
+
+            if (statusData && statusData.value === false) {
+                setError('Λυπούμαστε, το κατάστημα μόλις έκλεισε. Η παραγγελία δεν μπορεί να ολοκληρωθεί.');
+                setTimeout(() => navigate('/'), 3000);
+                setLoading(false);
+                return;
+            }
+
             // 1. Insert the order header
             const { data: orderData, error: orderError } = await supabase
                 .from('orders')
@@ -33,6 +77,8 @@ const CheckoutPage = () => {
                         customer_name: formData.name,
                         customer_phone: formData.phone,
                         customer_address: formData.address,
+                        bell: formData.bell,
+                        floor: formData.floor,
                         comments: formData.comments,
                         total_price: totalPrice,
                         status: 'pending'
@@ -57,11 +103,20 @@ const CheckoutPage = () => {
 
             if (itemsError) throw itemsError;
 
-            alert(`Ευχαριστούμε ${formData.name}! Η παραγγελία σας (Σύνολο: €${totalPrice.toFixed(2)}) καταχωρήθηκε επιτυχώς.`);
-            navigate('/', { state: { orderCompleted: true } });
+            localStorage.removeItem('cart');
+
+            navigate('/order-success', {
+                state: {
+                    customerName: formData.name,
+                    totalPrice: totalPrice,
+                    cart: cart,
+                    details: formData
+                },
+                replace: true
+            });
         } catch (error) {
             console.error('Error submitting order:', error);
-            alert('Παρουσιάστηκε σφάλμα κατά την καταχώρηση της παραγγελίας. Παρακαλούμε δοκιμάστε ξανά.');
+            setError('Παρουσιάστηκε σφάλμα κατά την καταχώρηση της παραγγελίας. Παρακαλούμε δοκιμάστε ξανά.');
         } finally {
             setLoading(false);
         }
@@ -123,30 +178,33 @@ const CheckoutPage = () => {
                 {/* Form Section - Now Second */}
                 <section className="checkout-section">
                     <h2>Στοιχεία Παράδοσης</h2>
+                    {error && <div className="error-msg" style={{ marginBottom: '1.5rem' }}>{error}</div>}
                     <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label>Ονοματεπώνυμο</label>
-                            <input
-                                type="text"
-                                name="name"
-                                required
-                                placeholder="π.χ. Γιάννης Παπαδόπουλος"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                disabled={loading}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Τηλέφωνο Επικοινωνίας</label>
-                            <input
-                                type="tel"
-                                name="phone"
-                                required
-                                placeholder="π.χ. 6900000000"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                disabled={loading}
-                            />
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Ονοματεπώνυμο</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    required
+                                    placeholder="π.χ. Γιάννης"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    disabled={loading}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Τηλέφωνο</label>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    required
+                                    placeholder="69XXXXXXXX"
+                                    value={formData.phone}
+                                    onChange={handleInputChange}
+                                    disabled={loading}
+                                />
+                            </div>
                         </div>
                         <div className="form-group">
                             <label>Διεύθυνση</label>
@@ -160,12 +218,36 @@ const CheckoutPage = () => {
                                 disabled={loading}
                             />
                         </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Κουδούνι</label>
+                                <input
+                                    type="text"
+                                    name="bell"
+                                    placeholder="Όνομα στο κουδούνι"
+                                    value={formData.bell}
+                                    onChange={handleInputChange}
+                                    disabled={loading}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Όροφος</label>
+                                <input
+                                    type="text"
+                                    name="floor"
+                                    placeholder="π.χ. 1ος"
+                                    value={formData.floor}
+                                    onChange={handleInputChange}
+                                    disabled={loading}
+                                />
+                            </div>
+                        </div>
                         <div className="form-group">
                             <label>Σχόλια (Προαιρετικά)</label>
                             <textarea
                                 name="comments"
-                                rows="3"
-                                placeholder="π.χ. 2ος όροφος, το κουδούνι γράφει..."
+                                rows="2"
+                                placeholder="..."
                                 value={formData.comments}
                                 onChange={handleInputChange}
                                 disabled={loading}

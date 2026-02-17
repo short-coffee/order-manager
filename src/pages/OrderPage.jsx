@@ -23,29 +23,66 @@ const CATEGORY_MAPPING = {
 const OrderPage = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState('Όλα');
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState(() => {
+        const saved = localStorage.getItem('cart');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }, [cart]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isShopOpen, setIsShopOpen] = useState(true);
 
-    const fetchProducts = async () => {
+    const fetchInitialData = async () => {
         try {
-            const { data, error } = await supabase
+            // 1. Fetch Products
+            const { data: productsData, error: productsError } = await supabase
                 .from('products')
                 .select('*')
                 .order('id', { ascending: true });
 
-            if (error) throw error;
-            setProducts(data || []);
+            if (productsError) throw productsError;
+            setProducts(productsData || []);
+
+            // 2. Fetch Shop Status
+            const { data: settingsData, error: settingsError } = await supabase
+                .from('settings')
+                .select('value')
+                .eq('key', 'is_ordering_enabled')
+                .single();
+
+            if (settingsError) throw settingsError;
+            if (settingsData) setIsShopOpen(settingsData.value);
+
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('Error fetching initial data:', error);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchProducts();
+        fetchInitialData();
+
+        // 3. Real-time Shop Status Subscription
+        const subscription = supabase
+            .channel('shop-status')
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'settings',
+                filter: 'key=eq.is_ordering_enabled'
+            }, (payload) => {
+                setIsShopOpen(payload.new.value);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
     }, []);
 
     const categories = ['Όλα', ...new Set(products.map(item => item.category))];
@@ -55,6 +92,7 @@ const OrderPage = () => {
         : products.filter(item => item.category === selectedCategory);
 
     const addToCart = (item) => {
+        if (!isShopOpen) return;
         setCart(prev => {
             const existing = prev.find(i => i.id === item.id);
             if (existing) {
@@ -128,6 +166,18 @@ const OrderPage = () => {
                 </div>
             </div>
 
+            {/* Shop Closed Overlay */}
+            {!isShopOpen && (
+                <div className="shop-closed-overlay animate-fade-in">
+                    <div className="closed-content premium-card">
+                        <div className="closed-icon">🛑</div>
+                        <h2>Είμαστε Κλειστά</h2>
+                        <p>Αυτή τη στιγμή δεν δεχόμαστε νέες παραγγελίες. <br /> Παρακαλούμε δοκιμάστε αργότερα!</p>
+                        <div className="closed-hours">Σας ευχαριστούμε για την προτίμηση!</div>
+                    </div>
+                </div>
+            )}
+
             {/* Menu Sections */}
             <main className="order-main">
                 <MenuGrid
@@ -168,7 +218,10 @@ const OrderPage = () => {
                     onRemove={removeFromCart}
                     onUpdate={updateQuantity}
                     totalPrice={totalPrice}
-                    onCheckout={() => navigate('/checkout', { state: { cart, totalPrice } })}
+                    onCheckout={() => {
+                        if (!isShopOpen) return;
+                        navigate('/checkout', { state: { cart, totalPrice } });
+                    }}
                 />
             )}
         </div>

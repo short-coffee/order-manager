@@ -64,6 +64,21 @@ const OrderCard = ({ order }) => {
                 ))}
             </div>
 
+            <div className="customer-info">
+                <div><b>Όνομα:</b> {order.customer_name}</div>
+                <div><b>Τηλ:</b> {order.customer_phone}</div>
+                <div><b>Διεύθυνση:</b> {order.customer_address}</div>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    {order.bell && <div><b>Κουδούνι:</b> {order.bell}</div>}
+                    {order.floor && <div><b>Όροφος:</b> {order.floor}</div>}
+                </div>
+                {order.comments && (
+                    <div className="order-comments">
+                        <b>Σχόλια:</b> {order.comments}
+                    </div>
+                )}
+            </div>
+
             <div className="card-footer">
                 <div className="card-footer-info">
                     <span className="time-stamp">{displayTime}</span>
