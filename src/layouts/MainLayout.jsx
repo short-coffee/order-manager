@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const MainLayout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { signOut } = useAuth();
     const [isOpen, setIsOpen] = useState(true);
     const [loading, setLoading] = useState(true);
     const [showStatusModal, setShowStatusModal] = useState(false);
-
-    useEffect(() => {
-        fetchShopStatus();
-    }, []);
 
     const fetchShopStatus = async () => {
         try {
@@ -30,27 +28,16 @@ const MainLayout = ({ children }) => {
         }
     };
 
-    const confirmToggleShop = async () => {
-        const newStatus = !isOpen;
-        setIsOpen(newStatus); // Optimistic update
-        setShowStatusModal(false);
-        try {
-            const { error } = await supabase
-                .from('settings')
-                .update({ value: newStatus })
-                .eq('key', 'is_ordering_enabled');
+    useEffect(() => {
+        fetchShopStatus();
+    }, []);
 
-            if (error) throw error;
-        } catch (error) {
-            console.error('Error toggling shop status:', error);
-            setIsOpen(!newStatus); // Revert on error
-        }
-    };
+    // ...
 
     const handleLogout = async () => {
         try {
-            const { error } = await supabase.auth.signOut();
-            if (error) throw error;
+            await signOut();
+            // Auth state change will handle redirect/session clearing
         } catch (error) {
             console.error('Error logging out:', error.message);
         }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '../../layouts/MainLayout';
+import OrderDetailsModal from '../../features/orders/components/OrderDetailsModal';
 import { supabase } from '../../lib/supabase';
 import './HistoryPage.css';
 
@@ -48,99 +49,15 @@ const HistoryPage = () => {
         setStats({ revenue, count, average });
     };
 
-    const renderModal = () => {
-        if (!selectedOrder) return null;
-
-        const items = selectedOrder.order_items || [];
-        const totalPrice = selectedOrder.total_price || 0;
-        const displayTime = new Date(selectedOrder.created_at).toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' });
-
-        return (
-            <div className="modal-overlay details-overlay" onClick={() => setSelectedOrder(null)}>
-                <div className="confirm-modal details-modal" onClick={(e) => e.stopPropagation()}>
-                    <div className="modal-header">
-                        <div className="modal-title-group">
-                            <h3>Λεπτομέρειες Παραγγελίας</h3>
-                            <span className="modal-status" style={{ color: 'var(--text-muted)' }}>
-                                {selectedOrder.status === 'delivered' ? 'ΟΛΟΚΛΗΡΩΜΕΝΗ' : 'ΑΡΧΕΙΟΘΕΤΗΜΕΝΗ'}
-                            </span>
-                        </div>
-                        <button className="modal-close-icon" onClick={() => setSelectedOrder(null)}>×</button>
-                    </div>
-
-                    <div className="modal-scroll-body">
-                        <div className="modal-section" style={{ marginBottom: '1.5rem' }}>
-                            <span className="modal-time" style={{ fontSize: '1.1rem', fontWeight: 600 }}>
-                                {displayTime} • {new Date(selectedOrder.created_at).toLocaleDateString('el-GR')}
-                            </span>
-                        </div>
-
-                        <div className="modal-section">
-                            <span className="section-label">ΠΡΟΪΟΝΤΑ</span>
-                            <div className="modal-items-list">
-                                {items.map((item, idx) => (
-                                    <div key={idx} className="modal-item-row">
-                                        <div className="item-qty-name">
-                                            <span className="qty">{item.quantity}x</span>
-                                            <div className="name-options">
-                                                <span className="name">{item.product_name || item.name}</span>
-                                                {item.options && (
-                                                    <div className="options">
-                                                        {item.options.sugar && <span>• {
-                                                            item.options.sugar === 'none' ? 'Σκέτος' :
-                                                                item.options.sugar === 'medium' ? 'Μέτριος' :
-                                                                    item.options.sugar === 'sweet' ? 'Γλυκός' :
-                                                                        item.options.sugar === 'little' ? 'Με ολίγη' :
-                                                                            item.options.sugar === 'saccharin' ? 'Ζαχαρίνη' :
-                                                                                item.options.sugar === 'stevia' ? 'Στέβια' :
-                                                                                    item.options.sugar === 'brown' ? 'Μαύρη' : item.options.sugar
-                                                        }</span>}
-                                                        {item.options.decaf && <span>• Decaf</span>}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <span className="price">€{(item.price * item.quantity).toFixed(2)}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="modal-section-grid">
-                            <div className="modal-section">
-                                <span className="section-label">ΣΤΟΙΧΕΙΑ ΠΕΛΑΤΗ</span>
-                                <div className="customer-detail"><b>Ονομα:</b> {selectedOrder.customer_name}</div>
-                                <div className="customer-detail"><b>Τηλ:</b> {selectedOrder.customer_phone}</div>
-                                <div className="customer-detail"><b>Διεύθυνση:</b> {selectedOrder.customer_address}</div>
-                            </div>
-                            <div className="modal-section">
-                                <span className="section-label">ΤΟΠΟΘΕΣΙΑ</span>
-                                <div className="customer-detail"><b>Κουδούνι:</b> {selectedOrder.bell || '-'}</div>
-                                <div className="customer-detail"><b>Όροφος:</b> {selectedOrder.floor || '-'}</div>
-                            </div>
-                        </div>
-
-                        {selectedOrder.comments && (
-                            <div className="modal-section">
-                                <span className="section-label">ΣΧΟΛΙΑ</span>
-                                <div className="modal-comments-box">{selectedOrder.comments}</div>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="modal-footer-price">
-                        <span className="total-label">ΣΥΝΟΛΙΚΟ ΠΟΣΟ</span>
-                        <span className="total-amount">€{totalPrice.toFixed(2)}</span>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
     return (
         <MainLayout>
             <div className="history-container animate-fade-in">
-                {renderModal()}
+                {selectedOrder && (
+                    <OrderDetailsModal
+                        order={selectedOrder}
+                        onClose={() => setSelectedOrder(null)}
+                    />
+                )}
                 <header className="history-header">
                     <div className="header-left">
                         <h1>Ιστορικό Παραγγελιών</h1>
