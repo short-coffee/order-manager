@@ -1,6 +1,7 @@
 import React from 'react';
-import MainLayout from '../layouts/MainLayout';
-import OrderList from '../features/orders/components/OrderList';
+import MainLayout from '../../layouts/MainLayout';
+import OrderList from '../../features/orders/components/OrderList';
+import './DashboardPage.css';
 
 const DashboardPage = () => {
     return (

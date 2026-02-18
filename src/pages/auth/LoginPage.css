@@ -32,7 +32,7 @@
 .orb-1 {
     width: 600px;
     height: 600px;
-    background: var(--primary);
+    background: rgb(189, 189, 5);
     top: -15%;
     left: -10%;
     animation-duration: 25s;
@@ -41,7 +41,7 @@
 .orb-2 {
     width: 500px;
     height: 500px;
-    background: var(--secondary);
+    background: rgb(189, 189, 5);
     bottom: 5%;
     right: -10%;
     animation-duration: 30s;
@@ -51,7 +51,7 @@
 .orb-3 {
     width: 350px;
     height: 350px;
-    background: var(--accent-orange);
+    background: rgb(189, 189, 5);
     top: 40%;
     left: 30%;
     opacity: 0.2;

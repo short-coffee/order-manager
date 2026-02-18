@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import MenuGrid from '../features/ordering/components/MenuGrid';
-import CartDrawer from '../features/ordering/components/CartDrawer';
+import { supabase } from '../../lib/supabase';
+import MenuGrid from '../../features/ordering/components/MenuGrid';
+import CartDrawer from '../../features/ordering/components/CartDrawer';
+import './OrderPage.css';
 
 const CATEGORY_MAPPING = {
     'coffee': 'Καφέδες',

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
-import DashboardPage from './pages/DashboardPage';
-import OrderPage from './pages/OrderPage';
-import CheckoutPage from './pages/CheckoutPage';
-import LoginPage from './pages/LoginPage';
-import OrderSuccessPage from './pages/OrderSuccessPage';
+import DashboardPage from './pages/admin/DashboardPage';
+import OrderPage from './pages/ordering/OrderPage';
+import CheckoutPage from './pages/ordering/CheckoutPage';
+import LoginPage from './pages/auth/LoginPage';
+import OrderSuccessPage from './pages/ordering/OrderSuccessPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {

@@ -1,4 +1,5 @@
 import React from 'react';
+import './MenuGrid.css';
 
 const MenuGrid = ({ items, onAdd }) => {
     return (

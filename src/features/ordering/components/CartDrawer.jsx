@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import './CartDrawer.css';
 
 const CartDrawer = ({ cart, onClose, onUpdate, onRemove, totalPrice, onCheckout }) => {
     const navigate = useNavigate();

@@ -1,0 +1,133 @@
+/* CHECKOUT PAGE STYLES */
+.checkout-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 900px) {
+    .checkout-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.checkout-section {
+    background: #fff;
+    border-radius: 28px;
+    padding: 1.5rem 2rem;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+
+.checkout-section h2 {
+    font-size: 1.3rem;
+    font-weight: 850;
+    margin-bottom: 1.5rem;
+    color: #1d1d1f;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    color: #1d1d1f;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 1.1rem;
+    border-radius: 16px;
+    border: 1px solid #e5e5e7;
+    background: #f5f5f7;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007aff;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.08);
+}
+
+.summary-items {
+    margin-bottom: 2rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f5f5f7;
+}
+
+.summary-item-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.summary-item-price {
+    font-weight: 700;
+    color: #1d1d1f;
+}
+
+.summary-total {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #f5f5f7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-total .total-label {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #1d1d1f;
+}
+
+.summary-total .total-amount {
+    color: #007aff;
+    font-size: 2rem;
+    font-weight: 950;
+}
+
+.order-confirm-btn {
+    width: 100%;
+    padding: 1.2rem;
+    border-radius: 20px;
+    border: none;
+    background: #000;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.order-confirm-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.order-confirm-btn:active {
+    transform: scale(0.96) !important;
+}

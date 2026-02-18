@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
+import './CheckoutPage.css';
+import './OrderPage.css'; // Inherits ordering layout
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
