@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Confetti from 'react-confetti';
-import { useWindowSize } from 'react-use';
-
 import './OrderSuccessPage.css';
 
 const OrderSuccessPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { width, height } = useWindowSize();
+
+    // Removed useWindowSize hook, handled by CSS
     const { customerName, totalPrice, cart = [], details = {} } = location.state || {};
 
     useEffect(() => {
@@ -25,8 +24,8 @@ const OrderSuccessPage = () => {
     return (
         <div className="order-success-root">
             <Confetti
-                width={width}
-                height={height}
+                width={window.innerWidth}
+                height={window.innerHeight}
                 numberOfPieces={200}
                 recycle={false}
                 colors={['#007aff', '#34c759', '#ff9500', '#ff3b30']}
@@ -79,7 +78,7 @@ const OrderSuccessPage = () => {
                                 <span className="detail-label">Διεύθυνση:</span>
                                 <span className="detail-value">{details.address}</span>
                             </div>
-                            <div className={`detail-row-responsive ${width < 768 ? 'flex-col' : ''}`} style={{ flexDirection: width < 768 ? 'column' : 'row', gap: width < 768 ? '0.5rem' : '1rem' }}>
+                            <div className="detail-row-responsive">
                                 {details.bell && (
                                     <div className="detail-sub-group">
                                         <span className="detail-label">Κουδούνι:</span>

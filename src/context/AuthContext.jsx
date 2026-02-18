@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import './AuthContext.css';
 
 const AuthContext = createContext({});
 
@@ -73,14 +74,7 @@ export const AuthProvider = ({ children }) => {
     return (
         <AuthContext.Provider value={value}>
             {loading ? (
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100vh',
-                    backgroundColor: '#1a1a1a',
-                    color: 'white'
-                }}>
+                <div className="auth-loading-screen">
                     Loading authentication...
                 </div>
             ) : children}

@@ -97,6 +97,14 @@
 .detail-row-responsive {
     display: flex;
     gap: 1rem;
+    flex-direction: row;
+}
+
+@media (max-width: 768px) {
+    .detail-row-responsive {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 }
 
 .detail-label {
