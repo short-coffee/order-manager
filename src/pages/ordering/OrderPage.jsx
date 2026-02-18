@@ -1,26 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { CATEGORY_MAPPING, CATEGORY_ORDER } from '../../lib/constants';
 import MenuGrid from '../../features/ordering/components/MenuGrid';
 import CartDrawer from '../../features/ordering/components/CartDrawer';
 import CustomizationModal from '../../features/ordering/components/CustomizationModal';
 import './OrderPage.css';
-
-const CATEGORY_MAPPING = {
-    'coffee': 'Καφέδες',
-    'chocolate': 'Σοκολάτες',
-    'tea': 'Τσάι',
-    'snacks': 'Σνακ',
-    'food': 'Φαγητό',
-    'desserts': 'Γλυκά/Παγωτά',
-    'ice-tea': 'Ice Tea',
-    'granites': 'Γρανίτες',
-    'smoothies': 'Smoothies',
-    'soft-drinks': 'Αναψυκτικά',
-    'beer': 'Μπύρες',
-    'wine': 'Κρασιά',
-    'drinks': 'Ποτά'
-};
 
 const OrderPage = () => {
     const navigate = useNavigate();
@@ -131,13 +116,8 @@ const OrderPage = () => {
     }, []);
 
     const categories = [...new Set(products.map(item => item.category))].sort((a, b) => {
-        const order = [
-            'coffee', 'chocolate', 'tea', 'ice-tea', 'granites',
-            'smoothies', 'soft-drinks', 'beer', 'wine', 'drinks',
-            'snacks', 'desserts', 'food'
-        ];
-        const idxA = order.indexOf(a);
-        const idxB = order.indexOf(b);
+        const idxA = CATEGORY_ORDER.indexOf(a);
+        const idxB = CATEGORY_ORDER.indexOf(b);
 
         if (idxA !== -1 && idxB !== -1) return idxA - idxB;
         if (idxA !== -1) return -1;
