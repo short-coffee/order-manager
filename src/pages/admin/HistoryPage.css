@@ -380,18 +380,41 @@
 @media (max-width: 1024px) {
     .history-stats-grid {
         grid-template-columns: 1fr;
+        gap: 2rem !important;
+        /* Force visible gap */
     }
-}
 
-@media (max-width: 768px) {
     .history-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1.5rem;
+        gap: 1.5rem !important;
+        /* Reduced gap */
+        margin-bottom: 3rem !important;
+    }
+
+    .history-header h1 {
+        font-size: 1.4rem !important;
+        /* Much smaller */
+        line-height: 1.3;
+        margin-bottom: 1rem !important;
+        margin-left: 1rem !important;
+        margin-right: 1rem !important;
+        text-align: center;
+    }
+
+    .history-header .subtitle {
+        margin-left: 1rem !important;
+        margin-right: 1rem !important;
+        text-align: center;
+    }
+
+    .date-picker-wrapper label {
+        margin-left: 1rem !important;
     }
 
     .date-picker-wrapper {
         width: 100%;
+        margin-top: 0.5rem !important;
     }
 
     /* Force table to not be like a table anymore */
@@ -414,8 +437,12 @@
     .history-table tr {
         border: 1px solid var(--glass-border);
         border-radius: 16px;
-        margin-bottom: 1rem;
-        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+        margin-right: 1rem;
+        margin-left: 1rem;
+        /* Space between cards */
+        padding: 1.5rem;
+        /* Internal padding */
         background: #fff;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         position: relative;
@@ -425,25 +452,27 @@
         /* Behave like a "row" */
         border: none;
         position: relative;
-        padding: 0.25rem 0;
+        padding: 0.5rem 0;
+        /* More padding per row */
         display: flex;
         align-items: center;
     }
 
     /* ID: Top Left */
     .history-table td:nth-child(1) {
-        font-size: 1.2rem;
+        font-size: 1rem;
+        /* Smaller */
         margin-bottom: 0.5rem;
     }
 
     /* Time: Absolute Top Right */
     .history-table td:nth-child(2) {
         position: absolute;
-        top: 1.2rem;
-        right: 1.2rem;
+        top: 1.5rem;
+        right: 1.5rem;
         color: #888;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
 
     /* Customer: Below ID */
@@ -458,42 +487,51 @@
     .history-table td:nth-child(4) {
         display: block;
         /* Override flex for tags wrapping */
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     /* Price: Bottom Left */
     .history-table td:nth-child(5) {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         color: var(--primary);
     }
 
     /* Actions: Absolute Bottom Right */
     .history-table td:nth-child(6) {
         position: absolute;
-        bottom: 1.2rem;
-        right: 1.2rem;
+        bottom: 1.5rem;
+        right: 1.5rem;
         padding: 0 !important;
     }
 
-    /* Stats Grid on Mobile */
-    .history-stats-grid {
-        gap: 1rem;
+    .premium-date-input {
+        margin-left: 1rem !important;
+        margin-right: 1rem !important;
+        width: calc(100% - 2rem) !important;
     }
 
     .stat-card {
         padding: 1.5rem;
+        margin-left: 1rem !important;
+        margin-right: 1rem !important;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        /* Smaller label */
     }
 
     .stat-value {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+        /* Smaller number */
     }
 
     /* Fix table container padding */
     .history-table-card {
-        padding: 0.5rem;
-        background: transparent;
-        box-shadow: none;
-        border: none;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
     }
 
     .history-table-card tr {

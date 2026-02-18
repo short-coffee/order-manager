@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '../../layouts/MainLayout';
 import OrderDetailsModal from '../../features/orders/components/OrderDetailsModal';
 import { api } from '../../services/api';
+import useIsMobile from '../../hooks/useIsMobile';
 import './HistoryPage.css';
 
 const HistoryPage = () => {
@@ -9,6 +10,7 @@ const HistoryPage = () => {
     const [loading, setLoading] = useState(true);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [stats, setStats] = useState({ revenue: 0, count: 0, average: 0 });
+    const isMobile = useIsMobile();
 
     const [selectedOrder, setSelectedOrder] = useState(null);
 
@@ -36,21 +38,33 @@ const HistoryPage = () => {
         setStats({ revenue, count, average });
     };
 
+    const mobileHeaderStyle = isMobile ? {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: '1.5rem',
+        marginBottom: '3rem'
+    } : {};
+
+    const mobileStatsStyle = isMobile ? {
+        gridTemplateColumns: '1fr',
+        gap: '1.5rem'
+    } : {};
+
     return (
         <MainLayout>
-            <div className="history-container animate-fade-in">
+            <div className="history-container animate-fade-in" style={{ width: '100%' }}>
                 {selectedOrder && (
                     <OrderDetailsModal
                         order={selectedOrder}
                         onClose={() => setSelectedOrder(null)}
                     />
                 )}
-                <header className="history-header">
+                <header className="history-header" style={mobileHeaderStyle}>
                     <div className="header-left">
-                        <h1>Ιστορικό Παραγγελιών</h1>
+                        <h1 style={isMobile ? { fontSize: '1.5rem', marginBottom: '0.5rem' } : {}}>Ιστορικό Παραγγελιών</h1>
                         <p className="subtitle">Επισκόπηση ολοκληρωμένων παραγγελιών και στατιστικά</p>
                     </div>
-                    <div className="date-picker-wrapper">
+                    <div className="date-picker-wrapper" style={isMobile ? { width: '100%', marginTop: '1rem' } : {}}>
                         <label>Ημερομηνία</label>
                         <input
                             type="date"
@@ -61,20 +75,20 @@ const HistoryPage = () => {
                     </div>
                 </header>
 
-                <div className="history-stats-grid">
-                    <div className="premium-card stat-card">
+                <div className="history-stats-grid" style={mobileStatsStyle}>
+                    <div className="premium-card stat-card" style={isMobile ? { padding: '1.5rem' } : {}}>
                         <span className="stat-label">ΣΥΝΟΛΙΚΑ ΕΣΟΔΑ</span>
-                        <span className="stat-value">€{stats.revenue.toFixed(2)}</span>
+                        <span className="stat-value" style={isMobile ? { fontSize: '1.8rem' } : {}}>€{stats.revenue.toFixed(2)}</span>
                         <div className="stat-icon revenue-icon">€</div>
                     </div>
-                    <div className="premium-card stat-card">
+                    <div className="premium-card stat-card" style={isMobile ? { padding: '1.5rem' } : {}}>
                         <span className="stat-label">ΠΛΗΘΟΣ ΠΑΡΑΓΓΕΛΙΩΝ</span>
-                        <span className="stat-value">{stats.count}</span>
+                        <span className="stat-value" style={isMobile ? { fontSize: '1.8rem' } : {}}>{stats.count}</span>
                         <div className="stat-icon count-icon">📦</div>
                     </div>
-                    <div className="premium-card stat-card">
+                    <div className="premium-card stat-card" style={isMobile ? { padding: '1.5rem' } : {}}>
                         <span className="stat-label">ΜΕΣΗ ΠΑΡΑΓΓΕΛΙΑ</span>
-                        <span className="stat-value">€{stats.average.toFixed(2)}</span>
+                        <span className="stat-value" style={isMobile ? { fontSize: '1.8rem' } : {}}>€{stats.average.toFixed(2)}</span>
                         <div className="stat-icon avg-icon">📊</div>
                     </div>
                 </div>
