@@ -1,41 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import OrderCard from './OrderCard';
 import OrderDetailsModal from './OrderDetailsModal';
 import { api } from '../../../services/api';
 import { STATUS_MAPPING } from '../../../lib/constants';
+import { useAudioNotification } from '../../../hooks/useAudioNotification';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [showAudioModal, setShowAudioModal] = useState(true);
-    const [isClosing, setIsClosing] = useState(false);
 
-    const audioRef = React.useRef(new Audio('/sound.mp3'));
-
-    const playNotificationSound = () => {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(error => {
-            console.log('Audio playback failed:', error);
-        });
-    };
-
-    const handleEnableAudio = () => {
-        // Play and immediately pause to unlock audio context without sound
-        audioRef.current.volume = 0;
-        audioRef.current.play().then(() => {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-            audioRef.current.volume = 1; // Reset volume for actual notifications
-        }).catch(error => {
-            console.log('Audio unlock failed:', error);
-        });
-
-        setIsClosing(true);
-        setTimeout(() => {
-            setShowAudioModal(false);
-        }, 500); // Wait for animation
-    };
+    const {
+        showAudioModal,
+        isClosing,
+        playNotificationSound,
+        enableAudio
+    } = useAudioNotification();
 
     const fetchOrders = async () => {
         try {
@@ -82,13 +62,17 @@ const OrderList = () => {
         };
     }, []);
 
+    const { inboundOrders, deliveringOrders, completedOrders } = useMemo(() => {
+        return {
+            inboundOrders: orders.filter(o => ['pending', 'preparing', 'ready'].includes(o.status)),
+            deliveringOrders: orders.filter(o => o.status === 'delivering'),
+            completedOrders: orders.filter(o => o.status === 'delivered')
+        };
+    }, [orders]);
+
     if (loading) {
         return <div className="loading-state">Φόρτωση παραγγελιών...</div>;
     }
-
-    const inboundOrders = orders.filter(o => ['pending', 'preparing', 'ready'].includes(o.status));
-    const deliveringOrders = orders.filter(o => o.status === 'delivering');
-    const completedOrders = orders.filter(o => o.status === 'delivered');
 
     // ... renderModal removed
 
@@ -101,7 +85,7 @@ const OrderList = () => {
                     <div className="audio-modal-content">
                         <h3>Καλώς ήρθατε!</h3>
                         <p>Για να λαμβάνετε ηχητικές ειδοποιήσεις για νέες παραγγελίες, πατήστε συνέχεια.</p>
-                        <button className="pro-btn" onClick={handleEnableAudio}>
+                        <button className="pro-btn" onClick={enableAudio}>
                             ΣΥΝΕΧΕΙΑ
                         </button>
                     </div>

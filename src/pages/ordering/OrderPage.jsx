@@ -1,4 +1,5 @@
 import { useCart } from '../../hooks/useCart';
+import { useDraggableScroll } from '../../hooks/useDraggableScroll';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -29,47 +30,7 @@ const OrderPage = () => {
     const [loading, setLoading] = useState(true);
     const [isShopOpen, setIsShopOpen] = useState(true);
     const [customizingProduct, setCustomizingProduct] = useState(null);
-    const categoryBarRef = useRef(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeft, setScrollLeft] = useState(0);
-
-    useEffect(() => {
-        const categoryBar = categoryBarRef.current;
-        if (!categoryBar) return;
-
-        const handleWheel = (e) => {
-            if (e.deltaY !== 0) {
-                e.preventDefault();
-                categoryBar.scrollLeft += e.deltaY;
-            }
-        };
-
-        categoryBar.addEventListener('wheel', handleWheel, { passive: false });
-        return () => categoryBar.removeEventListener('wheel', handleWheel);
-    }, []);
-
-    const handleMouseDown = (e) => {
-        setIsDragging(true);
-        setStartX(e.pageX - categoryBarRef.current.offsetLeft);
-        setScrollLeft(categoryBarRef.current.scrollLeft);
-    };
-
-    const handleMouseLeave = () => {
-        setIsDragging(false);
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    const handleMouseMove = (e) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        const x = e.pageX - categoryBarRef.current.offsetLeft;
-        const walk = (x - startX) * 2; // scroll-fast factor
-        categoryBarRef.current.scrollLeft = scrollLeft - walk;
-    };
+    const { ref: categoryBarRef, isDragging, events: dragEvents } = useDraggableScroll();
 
     const fetchInitialData = async () => {
         try {
@@ -158,10 +119,7 @@ const OrderPage = () => {
                 <div
                     className={`category-bar animate-slide-in ${isDragging ? 'dragging' : ''}`}
                     ref={categoryBarRef}
-                    onMouseDown={handleMouseDown}
-                    onMouseLeave={handleMouseLeave}
-                    onMouseUp={handleMouseUp}
-                    onMouseMove={handleMouseMove}
+                    {...dragEvents}
                     style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
                 >
                     {categories.map(cat => (
