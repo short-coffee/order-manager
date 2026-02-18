@@ -1,6 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useCart } from '../../hooks/useCart';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import { CATEGORY_MAPPING, CATEGORY_ORDER } from '../../lib/constants';
 import MenuGrid from '../../features/ordering/components/MenuGrid';
 import CartDrawer from '../../features/ordering/components/CartDrawer';
@@ -10,16 +12,19 @@ import './OrderPage.css';
 const OrderPage = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState('coffee');
-    const [cart, setCart] = useState(() => {
-        const saved = localStorage.getItem('cart');
-        return saved ? JSON.parse(saved) : [];
-    });
 
-    useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart));
-    }, [cart]);
+    // Use Cart Hook
+    const {
+        cart,
+        isCartOpen,
+        setIsCartOpen,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        totalItems,
+        totalPrice
+    } = useCart();
 
-    const [isCartOpen, setIsCartOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isShopOpen, setIsShopOpen] = useState(true);
@@ -69,23 +74,12 @@ const OrderPage = () => {
     const fetchInitialData = async () => {
         try {
             // 1. Fetch Products
-            const { data: productsData, error: productsError } = await supabase
-                .from('products')
-                .select('*')
-                .order('id', { ascending: true });
-
-            if (productsError) throw productsError;
-            setProducts(productsData || []);
+            const productsData = await api.getProducts();
+            setProducts(productsData);
 
             // 2. Fetch Shop Status
-            const { data: settingsData, error: settingsError } = await supabase
-                .from('settings')
-                .select('value')
-                .eq('key', 'is_ordering_enabled')
-                .single();
-
-            if (settingsError) throw settingsError;
-            if (settingsData) setIsShopOpen(settingsData.value);
+            const isEnabled = await api.getShopStatus();
+            setIsShopOpen(isEnabled);
 
         } catch (error) {
             console.error('Error fetching initial data:', error);
@@ -98,20 +92,12 @@ const OrderPage = () => {
         fetchInitialData();
 
         // 3. Real-time Shop Status Subscription
-        const subscription = supabase
-            .channel('shop-status')
-            .on('postgres_changes', {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'settings',
-                filter: 'key=eq.is_ordering_enabled'
-            }, (payload) => {
-                setIsShopOpen(payload.new.value);
-            })
-            .subscribe();
+        const unsubscribe = api.subscribeToShopStatus((newValue) => {
+            setIsShopOpen(newValue);
+        });
 
         return () => {
-            supabase.removeChannel(subscription);
+            unsubscribe();
         };
     }, []);
 
@@ -127,7 +113,8 @@ const OrderPage = () => {
 
     const filteredItems = products.filter(item => item.category === selectedCategory);
 
-    const addToCart = (item, options = null) => {
+    const handleAddToCart = (item, options = null) => {
+        // Wrapper to check shop status and handle customization modal trigger
         if (!isShopOpen) return;
 
         // Check if item needs customization (only coffee for now)
@@ -138,51 +125,10 @@ const OrderPage = () => {
             return;
         }
 
-        setCart(prev => {
-            // Uniqueness is defined by ID + Options (stringified for easy comparison)
-            const optionsKey = JSON.stringify(options);
-            const existingIndex = prev.findIndex(i =>
-                i.id === item.id && JSON.stringify(i.options) === optionsKey
-            );
-
-            if (existingIndex !== -1) {
-                const updatedCart = [...prev];
-                updatedCart[existingIndex] = {
-                    ...updatedCart[existingIndex],
-                    quantity: updatedCart[existingIndex].quantity + 1
-                };
-                return updatedCart;
-            }
-            return [...prev, { ...item, quantity: 1, options }];
-        });
+        addToCart(item, options, isShopOpen);
         setCustomizingProduct(null);
     };
 
-    const removeFromCart = (id, options = null) => {
-        const optionsKey = JSON.stringify(options);
-        setCart(prev => prev.filter(i =>
-            !(i.id === id && JSON.stringify(i.options) === optionsKey)
-        ));
-    };
-
-    const updateQuantity = (id, delta, options = null) => {
-        const optionsKey = JSON.stringify(options);
-        setCart(prev => {
-            const updated = prev.map(i =>
-                (i.id === id && JSON.stringify(i.options) === optionsKey)
-                    ? { ...i, quantity: i.quantity + delta }
-                    : i
-            ).filter(i => i.quantity > 0);
-
-            // Close cart if it becomes empty
-            if (updated.length === 0) setIsCartOpen(false);
-
-            return updated;
-        });
-    };
-
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     if (loading) {
         return (
@@ -249,7 +195,7 @@ const OrderPage = () => {
                         ...item,
                         image: item.image_url // Mapping DB field to component prop
                     }))}
-                    onAdd={addToCart}
+                    onAdd={handleAddToCart}
                 />
                 {filteredItems.length === 0 && (
                     <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
@@ -294,7 +240,7 @@ const OrderPage = () => {
                 <CustomizationModal
                     product={customizingProduct}
                     onClose={() => setCustomizingProduct(null)}
-                    onConfirm={(options) => addToCart(customizingProduct, options)}
+                    onConfirm={(options) => handleAddToCart(customizingProduct, options)}
                 />
             )}
         </div>
