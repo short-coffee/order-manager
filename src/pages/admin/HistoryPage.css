@@ -390,14 +390,114 @@
         gap: 1.5rem;
     }
 
-    .history-table th:nth-child(4),
-    .history-table td:nth-child(4),
-    .history-table th:nth-child(1),
+    .date-picker-wrapper {
+        width: 100%;
+    }
+
+    /* Force table to not be like a table anymore */
+    .history-table,
+    .history-table thead,
+    .history-table tbody,
+    .history-table th,
+    .history-table td,
+    .history-table tr {
+        display: block;
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+    .history-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .history-table tr {
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        margin-bottom: 1rem;
+        padding: 1.2rem;
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        position: relative;
+    }
+
+    .history-table td {
+        /* Behave like a "row" */
+        border: none;
+        position: relative;
+        padding: 0.25rem 0;
+        display: flex;
+        align-items: center;
+    }
+
+    /* ID: Top Left */
     .history-table td:nth-child(1) {
-        display: none;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Time: Absolute Top Right */
+    .history-table td:nth-child(2) {
+        position: absolute;
+        top: 1.2rem;
+        right: 1.2rem;
+        color: #888;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    /* Customer: Below ID */
+    .history-table td:nth-child(3) {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        width: 100%;
+    }
+
+    /* Products: Show them */
+    .history-table td:nth-child(4) {
+        display: block;
+        /* Override flex for tags wrapping */
+        margin-bottom: 1rem;
+    }
+
+    /* Price: Bottom Left */
+    .history-table td:nth-child(5) {
+        font-size: 1.5rem;
+        color: var(--primary);
+    }
+
+    /* Actions: Absolute Bottom Right */
+    .history-table td:nth-child(6) {
+        position: absolute;
+        bottom: 1.2rem;
+        right: 1.2rem;
+        padding: 0 !important;
+    }
+
+    /* Stats Grid on Mobile */
+    .history-stats-grid {
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
     }
 
     .stat-value {
         font-size: 1.8rem;
+    }
+
+    /* Fix table container padding */
+    .history-table-card {
+        padding: 0.5rem;
+        background: transparent;
+        box-shadow: none;
+        border: none;
+    }
+
+    .history-table-card tr {
+        /* Restore card background since container is transparent */
+        background: #fff;
     }
 }
