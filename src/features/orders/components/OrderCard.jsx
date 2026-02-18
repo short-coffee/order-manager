@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../../../lib/supabase';
 
 const OrderCard = ({ order, onOpenDetails }) => {
@@ -65,9 +66,9 @@ const OrderCard = ({ order, onOpenDetails }) => {
             className="premium-card order-card clickable-card"
             onClick={onOpenDetails}
         >
-            {showCancelConfirm && (
+            {showCancelConfirm && createPortal(
                 <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
-                    <div className="confirm-modal">
+                    <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
                         <h3>Οριστική Διαγραφή;</h3>
                         <p>Είστε σίγουροι ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ την παραγγελία #{order.id.toString().slice(-4).toUpperCase()}; Αυτό θα αφαιρέσει οριστικά την παραγγελία από τη βάση δεδομένων.</p>
                         <div className="modal-footer">
@@ -82,7 +83,8 @@ const OrderCard = ({ order, onOpenDetails }) => {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             <div className="card-header">
