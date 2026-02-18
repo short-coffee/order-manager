@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -13,14 +13,8 @@ const MainLayout = ({ children }) => {
 
     const fetchShopStatus = async () => {
         try {
-            const { data, error } = await supabase
-                .from('settings')
-                .select('value')
-                .eq('key', 'is_ordering_enabled')
-                .single();
-
-            if (error) throw error;
-            if (data) setIsOpen(data.value);
+            const status = await api.getShopStatus();
+            setIsOpen(status);
         } catch (error) {
             console.error('Error fetching shop status:', error);
         } finally {
@@ -28,16 +22,25 @@ const MainLayout = ({ children }) => {
         }
     };
 
+    const confirmToggleShop = async () => {
+        try {
+            const newStatus = !isOpen;
+            await api.toggleShopStatus(newStatus);
+            setIsOpen(newStatus);
+            setShowStatusModal(false);
+        } catch (error) {
+            console.error('Error toggling shop status:', error);
+            alert('Σφάλμα κατά την ενημέρωση.');
+        }
+    };
+
     useEffect(() => {
         fetchShopStatus();
     }, []);
 
-    // ...
-
     const handleLogout = async () => {
         try {
-            await signOut();
-            // Auth state change will handle redirect/session clearing
+            await signOut(); // AuthContext handles session clearing
         } catch (error) {
             console.error('Error logging out:', error.message);
         }
@@ -121,23 +124,6 @@ const MainLayout = ({ children }) => {
             </main>
         </div>
     );
-};
-
-const navItemStyle = {
-    padding: '0.75rem 1rem',
-    borderRadius: 'var(--radius-sm)',
-    cursor: 'pointer',
-    transition: 'var(--transition)',
-    color: 'var(--text-muted)'
-};
-
-const navActiveItemStyle = {
-    ...navItemStyle,
-    color: 'var(--primary)',
-    fontWeight: '700',
-    backgroundColor: 'var(--bg-light)',
-    borderBottom: '2px solid var(--primary)',
-    borderRadius: '0'
 };
 
 export default MainLayout;

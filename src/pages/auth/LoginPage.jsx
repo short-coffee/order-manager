@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
 import './LoginPage.css';
 
 const BEAN_COUNT = 60;
 
 const LoginPage = () => {
+    const { signIn } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -32,13 +33,7 @@ const LoginPage = () => {
         setError(null);
 
         try {
-            const { error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-
-            if (error) throw error;
-
+            await signIn(email, password);
             navigate('/dashboard');
         } catch (err) {
             setError('Λάθος email ή κωδικός πρόσβασης.');

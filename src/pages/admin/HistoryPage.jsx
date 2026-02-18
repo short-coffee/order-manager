@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '../../layouts/MainLayout';
 import OrderDetailsModal from '../../features/orders/components/OrderDetailsModal';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import './HistoryPage.css';
 
 const HistoryPage = () => {
@@ -19,20 +19,7 @@ const HistoryPage = () => {
     const fetchHistory = async () => {
         setLoading(true);
         try {
-            // Δημιουργία εύρους ημερομηνίας (από 00:00:00 έως 23:59:59)
-            const startOfDay = `${selectedDate}T00:00:00.000Z`;
-            const endOfDay = `${selectedDate}T23:59:59.999Z`;
-
-            const { data, error } = await supabase
-                .from('orders')
-                .select('*, order_items(*)')
-                .in('status', ['delivered', 'archived'])
-                .gte('created_at', startOfDay)
-                .lte('created_at', endOfDay)
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-
+            const data = await api.getHistory(selectedDate);
             setOrders(data || []);
             calculateStats(data || []);
         } catch (error) {

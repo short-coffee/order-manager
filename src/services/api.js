@@ -106,5 +106,37 @@ export const api = {
             .in('id', ids);
 
         if (error) throw error;
+    },
+
+    // History
+    getHistory: async (date) => {
+        // Range: 00:00:00 - 23:59:59
+        const startOfDay = `${date}T00:00:00.000Z`;
+        const endOfDay = `${date}T23:59:59.999Z`;
+
+        const { data, error } = await supabase
+            .from('orders')
+            .select('*, order_items(*)')
+            .in('status', ['delivered', 'archived'])
+            .gte('created_at', startOfDay)
+            .lte('created_at', endOfDay)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    // Admin Actions
+    toggleShopStatus: async (isOpen) => {
+        const { error } = await supabase
+            .from('settings')
+            .upsert({ key: 'is_ordering_enabled', value: isOpen });
+
+        if (error) throw error;
+    },
+
+    logout: async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
     }
 };
