@@ -43,6 +43,7 @@ export const api = {
     },
 
     // Orders (for OrderList.jsx later)
+    // Orders
     getOrders: async () => {
         const { data, error } = await supabase
             .from('orders')
@@ -51,6 +52,51 @@ export const api = {
 
         if (error) throw error;
         return data || [];
+    },
+
+    submitOrder: async (orderData, cartItems) => {
+        // 1. Insert Order
+        const { data: newOrder, error: orderError } = await supabase
+            .from('orders')
+            .insert([orderData])
+            .select()
+            .single();
+
+        if (orderError) throw orderError;
+
+        // 2. Insert Items
+        const orderItems = cartItems.map(item => ({
+            order_id: newOrder.id,
+            product_name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            options: item.options
+        }));
+
+        const { error: itemsError } = await supabase
+            .from('order_items')
+            .insert(orderItems);
+
+        if (itemsError) throw itemsError;
+
+        return newOrder;
+    },
+
+    subscribeToOrders: (callback) => {
+        const subscription = supabase
+            .channel('dashboard-orders')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'orders' },
+                (payload) => {
+                    callback(payload);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
     },
 
     archiveOrders: async (ids) => {

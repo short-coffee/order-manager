@@ -29,3 +29,12 @@ export const CATEGORY_ORDER = [
     'desserts',
     'food'
 ];
+
+export const STATUS_MAPPING = {
+    pending: { label: 'ΕΚΚΡΕΜΕΙ', color: 'var(--accent-orange)' },
+    preparing: { label: 'ΠΡΟΕΤΟΙΜΑΖΕΤΑΙ', color: 'var(--primary)' },
+    ready: { label: 'ΕΤΟΙΜΗ', color: 'var(--accent-green)' },
+    delivering: { label: 'ΣΕ ΔΙΑΝΟΜΗ', color: 'var(--secondary)' },
+    delivered: { label: 'ΠΑΡΑΔΟΘΗΚΕ', color: 'var(--text-muted)' },
+    archived: { label: 'ΑΡΧΕΙΟΘΕΤΗΜΕΝΗ', color: 'var(--text-muted)' }
+};

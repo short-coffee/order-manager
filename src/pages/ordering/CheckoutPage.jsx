@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import './CheckoutPage.css';
 import './OrderPage.css'; // Inherits ordering layout
 
@@ -28,22 +28,14 @@ const CheckoutPage = () => {
         }
 
         // Real-time Shop Status Check
-        const subscription = supabase
-            .channel('checkout-status')
-            .on('postgres_changes', {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'settings',
-                filter: 'key=eq.is_ordering_enabled'
-            }, (payload) => {
-                if (payload.new.value === false) {
-                    navigate('/', { replace: true });
-                }
-            })
-            .subscribe();
+        const unsubscribe = api.subscribeToShopStatus((isOpen) => {
+            if (!isOpen) {
+                navigate('/', { replace: true });
+            }
+        });
 
         return () => {
-            supabase.removeChannel(subscription);
+            unsubscribe();
         };
     }, [cart, navigate]);
 
@@ -58,53 +50,29 @@ const CheckoutPage = () => {
 
         try {
             // 0. Double check if ordering is still enabled
-            const { data: statusData } = await supabase
-                .from('settings')
-                .select('value')
-                .eq('key', 'is_ordering_enabled')
-                .single();
+            const isShopOpen = await api.getShopStatus();
 
-            if (statusData && statusData.value === false) {
+            if (!isShopOpen) {
                 setError('Λυπούμαστε, το κατάστημα μόλις έκλεισε. Η παραγγελία δεν μπορεί να ολοκληρωθεί.');
                 setTimeout(() => navigate('/'), 3000);
                 setLoading(false);
                 return;
             }
 
-            // 1. Insert the order header
-            const { data: orderData, error: orderError } = await supabase
-                .from('orders')
-                .insert([
-                    {
-                        customer_name: formData.name,
-                        customer_phone: formData.phone,
-                        customer_address: formData.address,
-                        bell: formData.bell,
-                        floor: formData.floor,
-                        comments: formData.comments,
-                        total_price: totalPrice,
-                        status: 'pending'
-                    }
-                ])
-                .select()
-                .single();
+            // 1. Prepare Order Data
+            const orderData = {
+                customer_name: formData.name,
+                customer_phone: formData.phone,
+                customer_address: formData.address,
+                bell: formData.bell,
+                floor: formData.floor,
+                comments: formData.comments,
+                total_price: totalPrice,
+                status: 'pending'
+            };
 
-            if (orderError) throw orderError;
-
-            // 2. Insert the order items
-            const orderItems = cart.map(item => ({
-                order_id: orderData.id,
-                product_name: item.name,
-                quantity: item.quantity,
-                price: item.price,
-                options: item.options // Sending customization options
-            }));
-
-            const { error: itemsError } = await supabase
-                .from('order_items')
-                .insert(orderItems);
-
-            if (itemsError) throw itemsError;
+            // 2. Submit Order via API
+            await api.submitOrder(orderData, cart);
 
             localStorage.removeItem('cart');
 
@@ -128,9 +96,9 @@ const CheckoutPage = () => {
     if (cart.length === 0) {
         return (
             <div className="order-page-root">
-                <main className="order-main" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+                <main className="order-main empty-cart-container">
                     <h2>Το καλάθι σας είναι άδειο</h2>
-                    <button className="add-btn" onClick={() => navigate('/')} style={{ marginTop: '2rem' }}>
+                    <button className="add-btn empty-cart-btn" onClick={() => navigate('/')}>
                         Επιστροφή στο Μενού
                     </button>
                 </main>
@@ -186,9 +154,8 @@ const CheckoutPage = () => {
                     </div>
 
                     <button
-                        className="add-btn"
+                        className="add-btn add-btn-secondary"
                         onClick={() => navigate('/')}
-                        style={{ marginTop: '2rem', border: '1px solid #eee' }}
                         disabled={loading}
                     >
                         ← Προσθήκη περισσότερων
@@ -198,7 +165,7 @@ const CheckoutPage = () => {
                 {/* Form Section - Now Second */}
                 <section className="checkout-section">
                     <h2>Στοιχεία Παράδοσης</h2>
-                    {error && <div className="error-msg" style={{ marginBottom: '1.5rem' }}>{error}</div>}
+                    {error && <div className="error-msg error-msg-container">{error}</div>}
                     <form onSubmit={handleSubmit}>
                         <div className="form-row">
                             <div className="form-group">

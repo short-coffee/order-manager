@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import OrderCard from './OrderCard';
-import { supabase } from '../../../lib/supabase';
+import { api } from '../../../services/api';
+import { STATUS_MAPPING } from '../../../lib/constants';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -8,15 +9,6 @@ const OrderList = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showAudioModal, setShowAudioModal] = useState(true);
     const [isClosing, setIsClosing] = useState(false);
-
-    const statusMapping = {
-        pending: { label: 'ΕΚΚΡΕΜΕΙ', color: 'var(--accent-orange)' },
-        preparing: { label: 'ΠΡΟΕΤΟΙΜΑΖΕΤΑΙ', color: 'var(--primary)' },
-        ready: { label: 'ΕΤΟΙΜΗ', color: 'var(--accent-green)' },
-        delivering: { label: 'ΣΕ ΔΙΑΝΟΜΗ', color: 'var(--secondary)' },
-        delivered: { label: 'ΠΑΡΑΔΟΘΗΚΕ', color: 'var(--text-muted)' },
-        archived: { label: 'ΑΡΧΕΙΟΘΕΤΗΜΕΝΗ', color: 'var(--text-muted)' }
-    };
 
     const audioRef = React.useRef(new Audio('/sound.mp3'));
 
@@ -46,16 +38,11 @@ const OrderList = () => {
 
     const fetchOrders = async () => {
         try {
-            const { data, error } = await supabase
-                .from('orders')
-                .select('*, order_items(*)')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            setOrders(data || []);
+            const data = await api.getOrders();
+            setOrders(data);
 
             if (selectedOrder) {
-                const updated = (data || []).find(o => o.id === selectedOrder.id);
+                const updated = data.find(o => o.id === selectedOrder.id);
                 if (updated) setSelectedOrder(updated);
             }
         } catch (error) {
@@ -70,12 +57,9 @@ const OrderList = () => {
         if (completedIds.length === 0) return;
 
         try {
-            const { error } = await supabase
-                .from('orders')
-                .update({ status: 'archived' })
-                .in('id', completedIds);
-
-            if (error) throw error;
+            await api.archiveOrders(completedIds);
+            // Optimistic update or refetch handled by subscription usually, but here we might want to refresh
+            fetchOrders();
         } catch (error) {
             console.error('Error archiving orders:', error);
             alert('Σφάλμα κατά την αρχειοθέτηση.');
@@ -85,22 +69,15 @@ const OrderList = () => {
     useEffect(() => {
         fetchOrders();
 
-        const channel = supabase
-            .channel('dashboard-orders')
-            .on(
-                'postgres_changes',
-                { event: '*', schema: 'public', table: 'orders' },
-                (payload) => {
-                    if (payload.eventType === 'INSERT') {
-                        playNotificationSound();
-                    }
-                    fetchOrders();
-                }
-            )
-            .subscribe();
+        const unsubscribe = api.subscribeToOrders((payload) => {
+            if (payload.eventType === 'INSERT') {
+                playNotificationSound();
+            }
+            fetchOrders();
+        });
 
         return () => {
-            supabase.removeChannel(channel);
+            unsubscribe();
         };
     }, []);
 
@@ -115,7 +92,7 @@ const OrderList = () => {
     const renderModal = () => {
         if (!selectedOrder) return null;
 
-        const currentStatus = statusMapping[selectedOrder.status] || { label: selectedOrder.status, color: 'var(--text-muted)' };
+        const currentStatus = STATUS_MAPPING[selectedOrder.status] || { label: selectedOrder.status, color: 'var(--text-muted)' };
         const items = selectedOrder.order_items || [];
         const totalPrice = selectedOrder.total_price || 0;
         const displayTime = new Date(selectedOrder.created_at).toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' });
@@ -134,8 +111,8 @@ const OrderList = () => {
                     </div>
 
                     <div className="modal-scroll-body">
-                        <div className="modal-section" style={{ marginBottom: '1.5rem' }}>
-                            <span className="modal-time" style={{ fontSize: '1.1rem', fontWeight: 600 }}>
+                        <div className="modal-section">
+                            <span className="modal-time">
                                 {displayTime} • {new Date(selectedOrder.created_at).toLocaleDateString('el-GR')}
                             </span>
                         </div>
@@ -203,7 +180,7 @@ const OrderList = () => {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
+        <div className="dashboard-container">
 
             {/* Audio Enable Modal */}
             {showAudioModal && (

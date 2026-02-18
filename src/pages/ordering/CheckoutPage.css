@@ -14,6 +14,35 @@
     }
 }
 
+@media (max-width: 768px) {
+    .checkout-container {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-aside {
+        position: static;
+        order: -1;
+    }
+}
+
+.add-btn-secondary {
+    margin-top: 2rem;
+    border: 1px solid #eee;
+}
+
+.error-msg-container {
+    margin-bottom: 1.5rem;
+}
+
+.empty-cart-container {
+    text-align: center;
+    padding: 5rem 2rem;
+}
+
+.empty-cart-btn {
+    margin-top: 2rem;
+}
+
 .checkout-section {
     background: #fff;
     border-radius: 28px;

@@ -133,7 +133,7 @@ const OrderPage = () => {
     if (loading) {
         return (
             <div className="order-page-root">
-                <main className="order-main" style={{ textAlign: 'center', padding: '10rem 2rem' }}>
+                <main className="order-main loading-container">
                     <div className="loading-spinner">Φόρτωση Μενού...</div>
                 </main>
             </div>
@@ -198,52 +198,58 @@ const OrderPage = () => {
                     onAdd={handleAddToCart}
                 />
                 {filteredItems.length === 0 && (
-                    <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                    <p className="no-products-msg">
                         Δεν βρέθηκαν προϊόντα σε αυτή την κατηγορία.
                     </p>
                 )}
             </main>
 
             {/* Floating Cart Button */}
-            {totalItems > 0 && (
-                <div className="cart-floating-action animate-bounce-in">
-                    <button className="cart-summary-btn" onClick={() => setIsCartOpen(true)}>
-                        <div className="cart-info">
-                            <div className="cart-icon-wrapper">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.56-7.43a1 1 0 0 0-1-1.21H6.05" /></svg>
-                                <span className="cart-count">{totalItems}</span>
+            {
+                totalItems > 0 && (
+                    <div className="cart-floating-action animate-bounce-in">
+                        <button className="cart-summary-btn" onClick={() => setIsCartOpen(true)}>
+                            <div className="cart-info">
+                                <div className="cart-icon-wrapper">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.56-7.43a1 1 0 0 0-1-1.21H6.05" /></svg>
+                                    <span className="cart-count">{totalItems}</span>
+                                </div>
+                                <span className="cart-label">Καλάθι</span>
                             </div>
-                            <span className="cart-label">Καλάθι</span>
-                        </div>
-                        <span className="cart-total">€{totalPrice.toFixed(2)}</span>
-                    </button>
-                </div>
-            )}
+                            <span className="cart-total">€{totalPrice.toFixed(2)}</span>
+                        </button>
+                    </div>
+                )
+            }
 
             {/* Cart Drawer Overlay */}
-            {isCartOpen && (
-                <CartDrawer
-                    cart={cart}
-                    onClose={() => setIsCartOpen(false)}
-                    onRemove={removeFromCart}
-                    onUpdate={updateQuantity}
-                    totalPrice={totalPrice}
-                    onCheckout={() => {
-                        if (!isShopOpen) return;
-                        navigate('/checkout', { state: { cart, totalPrice } });
-                    }}
-                />
-            )}
+            {
+                isCartOpen && (
+                    <CartDrawer
+                        cart={cart}
+                        onClose={() => setIsCartOpen(false)}
+                        onRemove={removeFromCart}
+                        onUpdate={updateQuantity}
+                        totalPrice={totalPrice}
+                        onCheckout={() => {
+                            if (!isShopOpen) return;
+                            navigate('/checkout', { state: { cart, totalPrice } });
+                        }}
+                    />
+                )
+            }
 
             {/* Customization Modal */}
-            {customizingProduct && (
-                <CustomizationModal
-                    product={customizingProduct}
-                    onClose={() => setCustomizingProduct(null)}
-                    onConfirm={(options) => handleAddToCart(customizingProduct, options)}
-                />
-            )}
-        </div>
+            {
+                customizingProduct && (
+                    <CustomizationModal
+                        product={customizingProduct}
+                        onClose={() => setCustomizingProduct(null)}
+                        onConfirm={(options) => handleAddToCart(customizingProduct, options)}
+                    />
+                )
+            }
+        </div >
     );
 };
 
