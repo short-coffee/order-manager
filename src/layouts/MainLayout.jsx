@@ -7,6 +7,7 @@ const MainLayout = ({ children }) => {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(true);
     const [loading, setLoading] = useState(true);
+    const [showStatusModal, setShowStatusModal] = useState(false);
 
     useEffect(() => {
         fetchShopStatus();
@@ -29,9 +30,10 @@ const MainLayout = ({ children }) => {
         }
     };
 
-    const toggleShop = async () => {
+    const confirmToggleShop = async () => {
         const newStatus = !isOpen;
         setIsOpen(newStatus); // Optimistic update
+        setShowStatusModal(false);
         try {
             const { error } = await supabase
                 .from('settings')
@@ -54,8 +56,36 @@ const MainLayout = ({ children }) => {
         }
     };
 
+    const renderStatusModal = () => {
+        if (!showStatusModal) return null;
+
+        return (
+            <div className="confirm-overlay" onClick={() => setShowStatusModal(false)}>
+                <div className="confirm-modal-box" onClick={e => e.stopPropagation()}>
+                    <div className="confirm-icon">{isOpen ? '🛑' : '✅'}</div>
+                    <h3>{isOpen ? 'Κλείσιμο Καταστήματος;' : 'Άνοιγμα Καταστήματος;'}</h3>
+                    <p>
+                        {isOpen
+                            ? 'Θέλετε σίγουρα να απενεργοποιήσετε τις παραγγελίες; Οι πελάτες δεν θα μπορούν να παραγγείλουν.'
+                            : 'Θέλετε να ενεργοποιήσετε τις παραγγελίες; Το κατάστημα θα είναι ξανά διαθέσιμο για τους πελάτες.'}
+                    </p>
+                    <div className="confirm-actions">
+                        <button className="btn-cancel" onClick={() => setShowStatusModal(false)}>ΑΚΥΡΟ</button>
+                        <button
+                            className={`btn-confirm ${isOpen ? 'danger' : ''}`}
+                            onClick={confirmToggleShop}
+                        >
+                            {isOpen ? 'ΚΛΕΙΣΙΜΟ' : 'ΑΝΟΙΓΜΑ'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="app-container">
+            {renderStatusModal()}
             {/* Top Navigation Bar */}
             <nav className="glass app-nav">
                 <div className="nav-logo">
@@ -78,16 +108,13 @@ const MainLayout = ({ children }) => {
                     </button>
                 </div>
                 <div className="nav-actions">
-                    {/* Status Toggle */}
+                    {/* Status Toggle Button */}
                     {!loading && (
-                        <div className="shop-status-toggle">
-                            <span className={`status-text ${isOpen ? 'open' : 'closed'}`}>
-                                {isOpen ? 'ΚΑΤΑΣΤΗΜΑ ΑΝΟΙΧΤΟ' : 'ΚΑΤΑΣΤΗΜΑ ΚΛΕΙΣΤΟ'}
+                        <div className="shop-status-btn" onClick={() => setShowStatusModal(true)}>
+                            <div className={`status-indicator ${isOpen ? 'open' : 'closed'}`}></div>
+                            <span className="status-label">
+                                {isOpen ? 'OPEN' : 'CLOSED'}
                             </span>
-                            <label className="switch">
-                                <input type="checkbox" checked={isOpen} onChange={toggleShop} />
-                                <span className="slider round"></span>
-                            </label>
                         </div>
                     )}
                     <div className="glass profile-badge">

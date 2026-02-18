@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import MenuGrid from '../../features/ordering/components/MenuGrid';
@@ -24,7 +24,7 @@ const CATEGORY_MAPPING = {
 
 const OrderPage = () => {
     const navigate = useNavigate();
-    const [selectedCategory, setSelectedCategory] = useState('Όλα');
+    const [selectedCategory, setSelectedCategory] = useState('coffee');
     const [cart, setCart] = useState(() => {
         const saved = localStorage.getItem('cart');
         return saved ? JSON.parse(saved) : [];
@@ -33,11 +33,53 @@ const OrderPage = () => {
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
+
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isShopOpen, setIsShopOpen] = useState(true);
     const [customizingProduct, setCustomizingProduct] = useState(null);
+    const categoryBarRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    useEffect(() => {
+        const categoryBar = categoryBarRef.current;
+        if (!categoryBar) return;
+
+        const handleWheel = (e) => {
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                categoryBar.scrollLeft += e.deltaY;
+            }
+        };
+
+        categoryBar.addEventListener('wheel', handleWheel, { passive: false });
+        return () => categoryBar.removeEventListener('wheel', handleWheel);
+    }, []);
+
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setStartX(e.pageX - categoryBarRef.current.offsetLeft);
+        setScrollLeft(categoryBarRef.current.scrollLeft);
+    };
+
+    const handleMouseLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - categoryBarRef.current.offsetLeft;
+        const walk = (x - startX) * 2; // scroll-fast factor
+        categoryBarRef.current.scrollLeft = scrollLeft - walk;
+    };
 
     const fetchInitialData = async () => {
         try {
@@ -88,17 +130,28 @@ const OrderPage = () => {
         };
     }, []);
 
-    const categories = ['Όλα', ...new Set(products.map(item => item.category))];
+    const categories = [...new Set(products.map(item => item.category))].sort((a, b) => {
+        const order = [
+            'coffee', 'chocolate', 'tea', 'ice-tea', 'granites',
+            'smoothies', 'soft-drinks', 'beer', 'wine', 'drinks',
+            'snacks', 'desserts', 'food'
+        ];
+        const idxA = order.indexOf(a);
+        const idxB = order.indexOf(b);
 
-    const filteredItems = selectedCategory === 'Όλα'
-        ? products
-        : products.filter(item => item.category === selectedCategory);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.localeCompare(b);
+    });
+
+    const filteredItems = products.filter(item => item.category === selectedCategory);
 
     const addToCart = (item, options = null) => {
         if (!isShopOpen) return;
 
-        // Check if item needs customization (beverages)
-        const needsCustomization = ['coffee', 'chocolate', 'tea', 'ice-tea', 'granites', 'smoothies'].includes(item.category);
+        // Check if item needs customization (only coffee for now)
+        const needsCustomization = item.category === 'coffee';
 
         if (needsCustomization && !options) {
             setCustomizingProduct(item);
@@ -126,14 +179,14 @@ const OrderPage = () => {
     };
 
     const removeFromCart = (id, options = null) => {
-        const optionsKey = options ? JSON.stringify(options) : null;
+        const optionsKey = JSON.stringify(options);
         setCart(prev => prev.filter(i =>
             !(i.id === id && JSON.stringify(i.options) === optionsKey)
         ));
     };
 
     const updateQuantity = (id, delta, options = null) => {
-        const optionsKey = options ? JSON.stringify(options) : null;
+        const optionsKey = JSON.stringify(options);
         setCart(prev => {
             const updated = prev.map(i =>
                 (i.id === id && JSON.stringify(i.options) === optionsKey)
@@ -163,17 +216,11 @@ const OrderPage = () => {
 
     return (
         <div className="order-page-root">
-            {/* Consumer Header */}
-            <header className="customer-header">
-                <div className="header-content">
-                    <div className="logo-container animate-fade-in">
-                        <img
-                            src="logo.png"
-                            alt="Shop Logo"
-                            className="logo-img"
-                        />
-                    </div>
-                    <div className="header-titles">
+            {/* Simple Minimal Header */}
+            <header className="minimal-header">
+                <div className="header-container animate-fade-in">
+                    <img src="/logo.png" alt="Black Bear Logo" className="minimal-logo" />
+                    <div className="header-text">
                         <h1>BLACK BEAR</h1>
                         <p>COFFEE BAR</p>
                     </div>
@@ -182,7 +229,15 @@ const OrderPage = () => {
 
             {/* Category Scroll */}
             <div className="category-bar-wrapper">
-                <div className="category-bar animate-slide-in">
+                <div
+                    className={`category-bar animate-slide-in ${isDragging ? 'dragging' : ''}`}
+                    ref={categoryBarRef}
+                    onMouseDown={handleMouseDown}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseUp={handleMouseUp}
+                    onMouseMove={handleMouseMove}
+                    style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+                >
                     {categories.map(cat => (
                         <button
                             key={cat}
@@ -199,7 +254,7 @@ const OrderPage = () => {
             {!isShopOpen && (
                 <div className="shop-closed-overlay animate-fade-in">
                     <div className="closed-content premium-card">
-                        <div className="closed-icon">🛑</div>
+                        <img src="/logo.png" alt="Black Bear Logo" className="closed-logo" />
                         <h2>Είμαστε Κλειστά</h2>
                         <p>Αυτή τη στιγμή δεν δεχόμαστε νέες παραγγελίες. <br /> Παρακαλούμε δοκιμάστε αργότερα!</p>
                         <div className="closed-hours">Σας ευχαριστούμε για την προτίμηση!</div>

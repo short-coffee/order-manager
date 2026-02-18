@@ -8,7 +8,6 @@ const MenuGrid = ({ items, onAdd }) => {
                 <div key={item.id} className="menu-item-card premium-card">
                     <div className="item-image-wrapper">
                         <img src={item.image} alt={item.name} className="item-image" />
-                        <div className="item-category-badge">{item.category}</div>
                     </div>
                     <div className="item-details">
                         <div className="item-main-info">
