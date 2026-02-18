@@ -140,7 +140,7 @@ const OrderSuccessPage = () => {
                     alignItems: 'center'
                 }}>
                     <span style={{ fontWeight: '800', color: '#1d1d1f', fontSize: '1.1rem' }}>Σύνολο:</span>
-                    <span style={{ fontWeight: '900', color: '#007aff', fontSize: '1.8rem' }}>
+                    <span style={{ fontWeight: '900', color: '#1d1d1f', fontSize: '1.8rem' }}>
                         €{totalPrice.toFixed(2)}
                     </span>
                 </div>

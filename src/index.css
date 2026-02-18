@@ -80,10 +80,23 @@ body {
   border-bottom: 1px solid var(--glass-border);
 }
 
-.nav-logo h2 {
-  color: var(--primary);
-  font-weight: 800;
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.nav-logo h2.brand-name {
+  color: #000;
+  font-weight: 900;
   margin: 0;
+  letter-spacing: 2px;
 }
 
 .nav-actions {
@@ -97,6 +110,35 @@ body {
   border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 0.9rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  margin-left: 2rem;
+}
+
+.nav-link-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+
+.nav-link-btn:hover {
+  color: var(--text-main);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.nav-link-btn.active {
+  color: var(--primary);
+  background: rgba(0, 122, 255, 0.08);
 }
 
 .logout-btn {

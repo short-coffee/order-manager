@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import './LoginPage.css';
+
+const BEAN_COUNT = 60;
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -9,6 +11,20 @@ const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+
+    // Generate fixed random properties for falling items
+    const fallingItems = useMemo(() => {
+        return Array.from({ length: BEAN_COUNT }).map((_, i) => ({
+            id: i,
+            left: `${Math.random() * 100}%`,
+            duration: `${15 + Math.random() * 20}s`,
+            delay: `${-Math.random() * 30}s`,
+            size: `${20 + Math.random() * 30}px`,
+            rotation: `${Math.random() * 360}deg`,
+            opacity: 0.1 + Math.random() * 0.4,
+            type: Math.random() > 0.6 ? 'icon' : 'bean' // 40% icons, 60% beans
+        }));
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -36,9 +52,22 @@ const LoginPage = () => {
         <div className="login-page">
             {/* Animated Background Elements */}
             <div className="bg-animations">
-                <div className="orb orb-1"></div>
-                <div className="orb orb-2"></div>
-                <div className="orb orb-3"></div>
+                {fallingItems.map(item => (
+                    <img
+                        key={item.id}
+                        src={item.type === 'icon' ? '/favicon.png' : '/bean.png'}
+                        className="falling-bean"
+                        style={{
+                            left: item.left,
+                            width: item.size,
+                            animationDuration: item.duration,
+                            animationDelay: item.delay,
+                            opacity: item.opacity,
+                            transform: `rotate(${item.rotation})`
+                        }}
+                        alt=""
+                    />
+                ))}
             </div>
 
             <div className="premium-card login-card animate-fade-in">

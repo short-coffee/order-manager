@@ -73,9 +73,23 @@
 
 .summary-item {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     padding: 1rem 0;
     border-bottom: 1px solid #f5f5f7;
+}
+
+.summary-item-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.summary-item-options {
+    font-size: 0.8rem;
+    color: #86868b;
+    font-weight: 700;
+    margin-top: 0.2rem;
+    text-transform: uppercase;
 }
 
 .summary-item-name {
@@ -104,7 +118,7 @@
 }
 
 .summary-total .total-amount {
-    color: #007aff;
+    color: #1d1d1f !important;
     font-size: 2rem;
     font-weight: 950;
 }

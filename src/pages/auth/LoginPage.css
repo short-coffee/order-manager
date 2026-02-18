@@ -18,62 +18,36 @@
     right: 0;
     bottom: 0;
     z-index: 0;
-    background: radial-gradient(circle at 50% 50%, #f0f2f5 0%, #e2e8f0 100%);
+    background: radial-gradient(circle at 50% 50%, #fefefe 0%, #f0f2f5 100%);
 }
 
-.orb {
+.falling-bean {
     position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.4;
-    animation: moveOrb 20s infinite alternate ease-in-out;
+    top: -100px;
+    /* Start above view */
+    pointer-events: none;
+    user-select: none;
+    animation: fall linear infinite;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.05));
 }
 
-.orb-1 {
-    width: 600px;
-    height: 600px;
-    background: rgb(189, 189, 5);
-    top: -15%;
-    left: -10%;
-    animation-duration: 25s;
-}
-
-.orb-2 {
-    width: 500px;
-    height: 500px;
-    background: rgb(189, 189, 5);
-    bottom: 5%;
-    right: -10%;
-    animation-duration: 30s;
-    animation-delay: -5s;
-}
-
-.orb-3 {
-    width: 350px;
-    height: 350px;
-    background: rgb(189, 189, 5);
-    top: 40%;
-    left: 30%;
-    opacity: 0.2;
-    animation-duration: 35s;
-    animation-delay: -10s;
-}
-
-@keyframes moveOrb {
+@keyframes fall {
     0% {
-        transform: translate(0, 0) scale(1);
+        transform: translateY(0vh) rotate(0deg) translateX(0);
+        opacity: 0;
     }
 
-    33% {
-        transform: translate(10%, 15%) scale(1.1);
+    10% {
+        opacity: inherit;
     }
 
-    66% {
-        transform: translate(-5%, 20%) scale(0.9);
+    90% {
+        opacity: inherit;
     }
 
     100% {
-        transform: translate(0, 0) scale(1);
+        transform: translateY(115vh) rotate(360deg) translateX(30px);
+        opacity: 0;
     }
 }
 

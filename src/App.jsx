@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import DashboardPage from './pages/admin/DashboardPage';
+import HistoryPage from './pages/admin/HistoryPage';
 import OrderPage from './pages/ordering/OrderPage';
 import CheckoutPage from './pages/ordering/CheckoutPage';
 import LoginPage from './pages/auth/LoginPage';
@@ -49,6 +50,14 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <DashboardPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/dashboard/history"
+                    element={
+                        <ProtectedRoute>
+                            <HistoryPage />
                         </ProtectedRoute>
                     }
                 />

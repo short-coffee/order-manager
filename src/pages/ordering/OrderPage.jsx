@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import MenuGrid from '../../features/ordering/components/MenuGrid';
 import CartDrawer from '../../features/ordering/components/CartDrawer';
+import CustomizationModal from '../../features/ordering/components/CustomizationModal';
 import './OrderPage.css';
 
 const CATEGORY_MAPPING = {
@@ -36,6 +37,7 @@ const OrderPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isShopOpen, setIsShopOpen] = useState(true);
+    const [customizingProduct, setCustomizingProduct] = useState(null);
 
     const fetchInitialData = async () => {
         try {
@@ -92,25 +94,51 @@ const OrderPage = () => {
         ? products
         : products.filter(item => item.category === selectedCategory);
 
-    const addToCart = (item) => {
+    const addToCart = (item, options = null) => {
         if (!isShopOpen) return;
+
+        // Check if item needs customization (beverages)
+        const needsCustomization = ['coffee', 'chocolate', 'tea', 'ice-tea', 'granites', 'smoothies'].includes(item.category);
+
+        if (needsCustomization && !options) {
+            setCustomizingProduct(item);
+            return;
+        }
+
         setCart(prev => {
-            const existing = prev.find(i => i.id === item.id);
-            if (existing) {
-                return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
+            // Uniqueness is defined by ID + Options (stringified for easy comparison)
+            const optionsKey = JSON.stringify(options);
+            const existingIndex = prev.findIndex(i =>
+                i.id === item.id && JSON.stringify(i.options) === optionsKey
+            );
+
+            if (existingIndex !== -1) {
+                const updatedCart = [...prev];
+                updatedCart[existingIndex] = {
+                    ...updatedCart[existingIndex],
+                    quantity: updatedCart[existingIndex].quantity + 1
+                };
+                return updatedCart;
             }
-            return [...prev, { ...item, quantity: 1 }];
+            return [...prev, { ...item, quantity: 1, options }];
         });
+        setCustomizingProduct(null);
     };
 
-    const removeFromCart = (id) => {
-        setCart(prev => prev.filter(i => i.id !== id));
+    const removeFromCart = (id, options = null) => {
+        const optionsKey = options ? JSON.stringify(options) : null;
+        setCart(prev => prev.filter(i =>
+            !(i.id === id && JSON.stringify(i.options) === optionsKey)
+        ));
     };
 
-    const updateQuantity = (id, delta) => {
+    const updateQuantity = (id, delta, options = null) => {
+        const optionsKey = options ? JSON.stringify(options) : null;
         setCart(prev => {
             const updated = prev.map(i =>
-                i.id === id ? { ...i, quantity: i.quantity + delta } : i
+                (i.id === id && JSON.stringify(i.options) === optionsKey)
+                    ? { ...i, quantity: i.quantity + delta }
+                    : i
             ).filter(i => i.quantity > 0);
 
             // Close cart if it becomes empty
@@ -136,7 +164,7 @@ const OrderPage = () => {
     return (
         <div className="order-page-root">
             {/* Consumer Header */}
-            <header className="customer-header glass">
+            <header className="customer-header">
                 <div className="header-content">
                     <div className="logo-container animate-fade-in">
                         <img
@@ -198,7 +226,7 @@ const OrderPage = () => {
             {/* Floating Cart Button */}
             {totalItems > 0 && (
                 <div className="cart-floating-action animate-bounce-in">
-                    <button className="cart-summary-btn premium-card" onClick={() => setIsCartOpen(true)}>
+                    <button className="cart-summary-btn" onClick={() => setIsCartOpen(true)}>
                         <div className="cart-info">
                             <div className="cart-icon-wrapper">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.56-7.43a1 1 0 0 0-1-1.21H6.05" /></svg>
@@ -223,6 +251,15 @@ const OrderPage = () => {
                         if (!isShopOpen) return;
                         navigate('/checkout', { state: { cart, totalPrice } });
                     }}
+                />
+            )}
+
+            {/* Customization Modal */}
+            {customizingProduct && (
+                <CustomizationModal
+                    product={customizingProduct}
+                    onClose={() => setCustomizingProduct(null)}
+                    onConfirm={(options) => addToCart(customizingProduct, options)}
                 />
             )}
         </div>

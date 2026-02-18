@@ -96,7 +96,8 @@ const CheckoutPage = () => {
                 order_id: orderData.id,
                 product_name: item.name,
                 quantity: item.quantity,
-                price: item.price
+                price: item.price,
+                options: item.options // Sending customization options
             }));
 
             const { error: itemsError } = await supabase
@@ -151,14 +152,28 @@ const CheckoutPage = () => {
                 <aside className="checkout-section summary-aside">
                     <h2>Σύνοψη Παραγγελίας</h2>
                     <div className="summary-items">
-                        {cart.map(item => (
-                            <div key={item.id} className="summary-item">
-                                <div className="summary-item-name">
-                                    {item.quantity}x {item.name}
+                        {cart.map((item, idx) => (
+                            <div key={`${item.id}-${idx}`} className="summary-item">
+                                <div className="summary-item-header">
+                                    <div className="summary-item-name">
+                                        {item.quantity}x {item.name}
+                                    </div>
+                                    <div className="summary-item-price">
+                                        €{(item.price * item.quantity).toFixed(2)}
+                                    </div>
                                 </div>
-                                <div className="summary-item-price">
-                                    €{(item.price * item.quantity).toFixed(2)}
-                                </div>
+                                {item.options && (
+                                    <div className="summary-item-options">
+                                        {item.options.sugar === 'none' ? 'ΣΚΕΤΟΣ' :
+                                            item.options.sugar === 'medium' ? 'ΜΕΤΡΙΟΣ' :
+                                                item.options.sugar === 'sweet' ? 'ΓΛΥΚΟΣ' :
+                                                    item.options.sugar === 'little' ? 'ΜΕ ΟΛΙΓΗ' :
+                                                        item.options.sugar === 'saccharin' ? 'ΖΑΧΑΡΙΝΗ' :
+                                                            item.options.sugar === 'stevia' ? 'ΣΤΕΒΙΑ' :
+                                                                item.options.sugar === 'brown' ? 'ΜΑΥΡΗ Z.' : ''}
+                                        {item.options.decaf ? ' • Decaf' : ''}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

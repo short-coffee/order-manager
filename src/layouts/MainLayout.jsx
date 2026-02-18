@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const MainLayout = ({ children }) => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [isOpen, setIsOpen] = useState(true);
     const [loading, setLoading] = useState(true);
 
@@ -56,7 +59,23 @@ const MainLayout = ({ children }) => {
             {/* Top Navigation Bar */}
             <nav className="glass app-nav">
                 <div className="nav-logo">
-                    <h2>Order Manager</h2>
+                    <img src="/favicon.png" alt="Black Bear Logo" className="dashboard-logo" />
+                    <h2 className="brand-name">BLACK BEAR</h2>
+                </div>
+
+                <div className="nav-links">
+                    <button
+                        className={`nav-link-btn ${location.pathname === '/dashboard' ? 'active' : ''}`}
+                        onClick={() => navigate('/dashboard')}
+                    >
+                        LIVE ORDERS
+                    </button>
+                    <button
+                        className={`nav-link-btn ${location.pathname === '/dashboard/history' ? 'active' : ''}`}
+                        onClick={() => navigate('/dashboard/history')}
+                    >
+                        ΙΣΤΟΡΙΚΟ
+                    </button>
                 </div>
                 <div className="nav-actions">
                     {/* Status Toggle */}

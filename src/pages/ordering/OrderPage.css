@@ -5,39 +5,43 @@
     background-color: #ffffff;
 }
 
-.customer-header {
-    padding: 2.2rem 1.5rem 1.5rem;
+#root .order-page-root .customer-header {
+    background: #b9b909 !important;
+    background-color: #b9b909 !important;
+    background-image: none !important;
+    color: white !important;
+    padding: 3rem 1.5rem;
     text-align: center;
-    background: rgb(185, 185, 9);
-    color: white;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     position: relative;
-    overflow: hidden;
+    z-index: 10;
 }
 
-.customer-header::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=1000') center/cover;
-    opacity: 0.15;
-    mix-blend-mode: overlay;
+/* Force solid blue for floating button */
+#root .order-page-root .cart-summary-btn {
+    background-color: #007aff !important;
+    background: #007aff !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 15px 40px rgba(0, 122, 255, 0.4) !important;
+}
+
+#root .order-page-root .cart-count {
+    background-color: white !important;
+    background: white !important;
+    color: #007aff !important;
+    border: 2.5px solid #007aff !important;
 }
 
 .header-content {
-    position: relative;
-    z-index: 1;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    gap: 1rem;
     max-width: 1200px;
     margin: 0 auto;
-    width: 100%;
 }
 
 .logo-container {
@@ -139,7 +143,8 @@
 .cart-summary-btn {
     width: 100%;
     padding: 1.4rem 2rem;
-    background: #1d1d1f;
+    background: #007aff !important;
+    /* Force Blue */
     color: #fff;
     border: none;
     border-radius: 24px;
@@ -147,7 +152,7 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 20px 40px rgba(0, 122, 255, 0.3);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -172,8 +177,8 @@
     position: absolute;
     top: -8px;
     right: -12px;
-    background: #007aff;
-    color: white;
+    background: white;
+    color: #007aff;
     min-width: 20px;
     height: 20px;
     padding: 0 4px;
@@ -183,7 +188,7 @@
     justify-content: center;
     font-size: 0.7rem;
     font-weight: 900;
-    border: 2px solid #1d1d1f;
+    border: 2px solid #007aff;
 }
 
 .cart-label {

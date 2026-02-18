@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { supabase } from '../../../lib/supabase';
 
-const OrderCard = ({ order }) => {
+const OrderCard = ({ order, onOpenDetails }) => {
     const [updating, setUpdating] = useState(false);
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
     const statusMapping = {
         pending: { label: 'ΕΚΚΡΕΜΕΙ', color: 'var(--accent-orange)' },
@@ -25,6 +26,23 @@ const OrderCard = ({ order }) => {
         displayTime = date.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' });
     }
 
+    const deleteOrder = async () => {
+        setUpdating(true);
+        try {
+            const { error } = await supabase
+                .from('orders')
+                .delete()
+                .eq('id', order.id);
+
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error deleting order:', error);
+            alert('Σφάλμα κατά τη διαγραφή της παραγγελίας.');
+        } finally {
+            setUpdating(false);
+        }
+    };
+
     const updateStatus = async (newStatus) => {
         setUpdating(true);
         try {
@@ -43,7 +61,30 @@ const OrderCard = ({ order }) => {
     };
 
     return (
-        <div className="premium-card order-card">
+        <div
+            className="premium-card order-card clickable-card"
+            onClick={onOpenDetails}
+        >
+            {showCancelConfirm && (
+                <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
+                    <div className="confirm-modal">
+                        <h3>Οριστική Διαγραφή;</h3>
+                        <p>Είστε σίγουροι ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ την παραγγελία #{order.id.toString().slice(-4).toUpperCase()}; Αυτό θα αφαιρέσει οριστικά την παραγγελία από τη βάση δεδομένων.</p>
+                        <div className="modal-footer">
+                            <button className="cancel-modal-btn" onClick={() => setShowCancelConfirm(false)}>
+                                ΟΧΙ, ΠΙΣΩ
+                            </button>
+                            <button className="confirm-modal-btn" onClick={() => {
+                                deleteOrder();
+                                setShowCancelConfirm(false);
+                            }}>
+                                ΝΑΙ, ΔΙΑΓΡΑΦΗ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="card-header">
                 <span className="order-id">ΠΑΡΑΓΓΕΛΙΑ #{order.id.toString().slice(-4).toUpperCase()}</span>
                 <span className="status-label" style={{
@@ -57,9 +98,27 @@ const OrderCard = ({ order }) => {
 
             <div className="order-items">
                 {items.map((item, idx) => (
-                    <div key={idx} className="order-item-row">
-                        <span className="item-name">{item.quantity}x {item.product_name || item.name}</span>
-                        <span className="item-price">€{(item.price * item.quantity).toFixed(2)}</span>
+                    <div key={idx} className="order-item-row-wrapper">
+                        <div className="order-item-row">
+                            <span className="item-name">{item.quantity}x {item.product_name || item.name}</span>
+                            <span className="item-price">€{(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                        {item.options && (
+                            <div className="order-item-options-admin">
+                                {item.options.sugar && (
+                                    <span className={`sugar-tag ${item.options.sugar}`}>
+                                        {item.options.sugar === 'none' ? 'ΣΚΕΤΟΣ' :
+                                            item.options.sugar === 'medium' ? 'ΜΕΤΡΙΟΣ' :
+                                                item.options.sugar === 'sweet' ? 'ΓΛΥΚΟΣ' :
+                                                    item.options.sugar === 'little' ? 'ΜΕ ΟΛΙΓΗ' :
+                                                        item.options.sugar === 'saccharin' ? 'ΖΑΧΑΡΙΝΗ' :
+                                                            item.options.sugar === 'stevia' ? 'ΣΤΕΒΙΑ' :
+                                                                item.options.sugar === 'brown' ? 'ΜΑΥΡΗ' : item.options.sugar}
+                                    </span>
+                                )}
+                                {item.options.decaf && <span className="decaf-tag">DECAF</span>}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
@@ -85,7 +144,17 @@ const OrderCard = ({ order }) => {
                     <span className="total-price">€{totalPrice.toFixed(2)}</span>
                 </div>
 
-                <div className="card-actions">
+                <div className="card-actions" onClick={(e) => e.stopPropagation()}>
+                    {['pending', 'preparing', 'ready', 'delivering'].includes(order.status) && (
+                        <button
+                            className="cancel-btn"
+                            onClick={() => setShowCancelConfirm(true)}
+                            disabled={updating}
+                            title="ΑΚΥΡΩΣΗ"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    )}
                     {['pending', 'preparing', 'ready'].includes(order.status) && (
                         <button
                             className="action-btn send-btn"
