@@ -6,6 +6,8 @@ const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [showAudioModal, setShowAudioModal] = useState(true);
+    const [isClosing, setIsClosing] = useState(false);
 
     const statusMapping = {
         pending: { label: 'ΕΚΚΡΕΜΕΙ', color: 'var(--accent-orange)' },
@@ -14,6 +16,32 @@ const OrderList = () => {
         delivering: { label: 'ΣΕ ΔΙΑΝΟΜΗ', color: 'var(--secondary)' },
         delivered: { label: 'ΠΑΡΑΔΟΘΗΚΕ', color: 'var(--text-muted)' },
         archived: { label: 'ΑΡΧΕΙΟΘΕΤΗΜΕΝΗ', color: 'var(--text-muted)' }
+    };
+
+    const audioRef = React.useRef(new Audio('/sound.mp3'));
+
+    const playNotificationSound = () => {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(error => {
+            console.log('Audio playback failed:', error);
+        });
+    };
+
+    const handleEnableAudio = () => {
+        // Play and immediately pause to unlock audio context without sound
+        audioRef.current.volume = 0;
+        audioRef.current.play().then(() => {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            audioRef.current.volume = 1; // Reset volume for actual notifications
+        }).catch(error => {
+            console.log('Audio unlock failed:', error);
+        });
+
+        setIsClosing(true);
+        setTimeout(() => {
+            setShowAudioModal(false);
+        }, 500); // Wait for animation
     };
 
     const fetchOrders = async () => {
@@ -62,7 +90,10 @@ const OrderList = () => {
             .on(
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'orders' },
-                () => {
+                (payload) => {
+                    if (payload.eventType === 'INSERT') {
+                        playNotificationSound();
+                    }
                     fetchOrders();
                 }
             )
@@ -172,46 +203,62 @@ const OrderList = () => {
     };
 
     return (
-        <div className="kanban-grid">
-            {renderModal()}
-            <div className="kanban-column inbound">
-                <div className="column-header-with-action">
-                    <h3 className="column-title">ΝΕΕΣ / ΠΡΟΕΤΟΙΜΑΖΕΤΑΙ ({inboundOrders.length})</h3>
-                </div>
-                <div className="kanban-scroll-area">
-                    {inboundOrders.map(order => (
-                        <OrderCard key={order.id} order={order} onOpenDetails={() => setSelectedOrder(order)} />
-                    ))}
-                    {inboundOrders.length === 0 && <p className="empty-msg">Καμία νέα παραγγελία</p>}
-                </div>
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
 
-            <div className="kanban-column delivering">
-                <div className="column-header-with-action">
-                    <h3 className="column-title">ΣΕ ΔΙΑΝΟΜΗ ({deliveringOrders.length})</h3>
-                </div>
-                <div className="kanban-scroll-area">
-                    {deliveringOrders.map(order => (
-                        <OrderCard key={order.id} order={order} onOpenDetails={() => setSelectedOrder(order)} />
-                    ))}
-                    {deliveringOrders.length === 0 && <p className="empty-msg">Καμία παραγγελία σε διανομή</p>}
-                </div>
-            </div>
-
-            <div className="kanban-column completed">
-                <div className="column-header-with-action">
-                    <h3 className="column-title">ΟΛΟΚΛΗΡΩΜΕΝΕΣ ({completedOrders.length})</h3>
-                    {completedOrders.length > 0 && (
-                        <button className="clear-column-btn" onClick={archiveCompleted} title="Αρχειοθέτηση όλων">
-                            ΚΑΘΑΡΙΣΜΟΣ
+            {/* Audio Enable Modal */}
+            {showAudioModal && (
+                <div className={`audio-modal-overlay ${isClosing ? 'fading-out' : ''}`}>
+                    <div className="audio-modal-content">
+                        <h3>Καλώς ήρθατε!</h3>
+                        <p>Για να λαμβάνετε ηχητικές ειδοποιήσεις για νέες παραγγελίες, πατήστε συνέχεια.</p>
+                        <button className="pro-btn" onClick={handleEnableAudio}>
+                            ΣΥΝΕΧΕΙΑ
                         </button>
-                    )}
+                    </div>
                 </div>
-                <div className="kanban-scroll-area">
-                    {completedOrders.map(order => (
-                        <OrderCard key={order.id} order={order} onOpenDetails={() => setSelectedOrder(order)} />
-                    ))}
-                    {completedOrders.length === 0 && <p className="empty-msg">Δεν υπάρχουν ολοκληρωμένες παραγγελίες</p>}
+            )}
+
+            <div className="kanban-grid">
+                {renderModal()}
+                <div className="kanban-column inbound">
+                    <div className="column-header-with-action">
+                        <h3 className="column-title">ΝΕΕΣ / ΠΡΟΕΤΟΙΜΑΖΕΤΑΙ ({inboundOrders.length})</h3>
+                    </div>
+                    <div className="kanban-scroll-area">
+                        {inboundOrders.map(order => (
+                            <OrderCard key={order.id} order={order} onOpenDetails={() => setSelectedOrder(order)} />
+                        ))}
+                        {inboundOrders.length === 0 && <p className="empty-msg">Καμία νέα παραγγελία</p>}
+                    </div>
+                </div>
+
+                <div className="kanban-column delivering">
+                    <div className="column-header-with-action">
+                        <h3 className="column-title">ΣΕ ΔΙΑΝΟΜΗ ({deliveringOrders.length})</h3>
+                    </div>
+                    <div className="kanban-scroll-area">
+                        {deliveringOrders.map(order => (
+                            <OrderCard key={order.id} order={order} onOpenDetails={() => setSelectedOrder(order)} />
+                        ))}
+                        {deliveringOrders.length === 0 && <p className="empty-msg">Καμία παραγγελία σε διανομή</p>}
+                    </div>
+                </div>
+
+                <div className="kanban-column completed">
+                    <div className="column-header-with-action">
+                        <h3 className="column-title">ΟΛΟΚΛΗΡΩΜΕΝΕΣ ({completedOrders.length})</h3>
+                        {completedOrders.length > 0 && (
+                            <button className="clear-column-btn" onClick={archiveCompleted} title="Αρχειοθέτηση όλων">
+                                ΚΑΘΑΡΙΣΜΟΣ
+                            </button>
+                        )}
+                    </div>
+                    <div className="kanban-scroll-area">
+                        {completedOrders.map(order => (
+                            <OrderCard key={order.id} order={order} onOpenDetails={() => setSelectedOrder(order)} />
+                        ))}
+                        {completedOrders.length === 0 && <p className="empty-msg">Δεν υπάρχουν ολοκληρωμένες παραγγελίες</p>}
+                    </div>
                 </div>
             </div>
         </div>
