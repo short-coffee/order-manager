@@ -78,7 +78,12 @@ const MainLayout = ({ children }) => {
             {renderStatusModal()}
             {/* Top Navigation Bar */}
             <nav className="glass app-nav">
-                <div className="nav-logo">
+                <div
+                    className="nav-logo"
+                    onClick={() => window.location.href = '/dashboard'}
+                    style={{ cursor: 'pointer' }}
+                    title="Reload Dashboard"
+                >
                     <img src="/favicon.png" alt="Black Bear Logo" className="dashboard-logo" />
                     <h2 className="brand-name">BLACK BEAR</h2>
                 </div>
