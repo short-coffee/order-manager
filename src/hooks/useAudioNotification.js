@@ -1,28 +1,39 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+
+let audioInstance = null;
+let globalAudioUnlocked = false;
 
 export const useAudioNotification = () => {
-    const audioRef = useRef(new Audio('/sound.mp3'));
-    const [showAudioModal, setShowAudioModal] = useState(true);
+    if (!audioInstance) {
+        audioInstance = new Audio('/sound.mp3');
+    }
+
+    const [showAudioModal, setShowAudioModal] = useState(!globalAudioUnlocked);
     const [isClosing, setIsClosing] = useState(false);
 
     const playNotificationSound = () => {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(error => {
+        if (!audioInstance) return;
+        audioInstance.currentTime = 0;
+        audioInstance.play().catch(error => {
             console.log('Audio playback failed:', error);
         });
     };
 
     const enableAudio = () => {
+        if (!audioInstance) return;
+        
         // Play and immediately pause to unlock audio context without sound
-        audioRef.current.volume = 0;
-        audioRef.current.play().then(() => {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-            audioRef.current.volume = 1; // Reset volume for actual notifications
+        audioInstance.volume = 0;
+        audioInstance.play().then(() => {
+            audioInstance.pause();
+            audioInstance.currentTime = 0;
+            audioInstance.volume = 1; // Reset volume for actual notifications
+            globalAudioUnlocked = true;
         }).catch(error => {
             console.log('Audio unlock failed:', error);
         });
 
+        globalAudioUnlocked = true;
         setIsClosing(true);
         setTimeout(() => {
             setShowAudioModal(false);
