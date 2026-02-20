@@ -126,11 +126,11 @@ export const api = {
         return data || [];
     },
 
-    // Admin Actions
     toggleShopStatus: async (isOpen) => {
         const { error } = await supabase
             .from('settings')
-            .upsert({ key: 'is_ordering_enabled', value: isOpen });
+            .update({ value: isOpen })
+            .eq('key', 'is_ordering_enabled');
 
         if (error) throw error;
     },
