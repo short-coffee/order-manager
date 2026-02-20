@@ -36,6 +36,12 @@ const MainLayout = ({ children }) => {
 
     useEffect(() => {
         fetchShopStatus();
+        const unsubscribe = api.subscribeToShopStatus((newStatus) => {
+            setIsOpen(newStatus);
+        });
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
     }, []);
 
     const handleLogout = async () => {
