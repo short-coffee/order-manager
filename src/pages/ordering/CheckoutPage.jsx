@@ -110,7 +110,7 @@ const CheckoutPage = () => {
         <div className="order-page-root">
             <header className="customer-header glass">
                 <div className="header-container">
-                    <img src="/logo.png" alt="Black Bear Logo" className="minimal-logo" />
+                    <img src="/images/logo.png" alt="Black Bear Logo" className="minimal-logo" />
                     <div className="header-text">
                         <h1>Ολοκλήρωση Παραγγελίας</h1>
                         <p>Συμπληρώστε τα στοιχεία σας για την παράδοση</p>

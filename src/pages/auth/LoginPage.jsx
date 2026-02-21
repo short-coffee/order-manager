@@ -50,7 +50,7 @@ const LoginPage = () => {
                 {fallingItems.map(item => (
                     <img
                         key={item.id}
-                        src={item.type === 'icon' ? '/favicon.png' : '/bean.png'}
+                        src={item.type === 'icon' ? '/images/favicon.png' : '/images/bean.png'}
                         className="falling-bean"
                         style={{
                             left: item.left,
@@ -68,7 +68,7 @@ const LoginPage = () => {
             <div className="premium-card login-card animate-fade-in">
                 <div className="logo-container">
                     <div className="logo-circle" style={{ margin: '0 auto 1.5rem' }}>
-                        <img src="/logo.png" alt="Logo" className="logo-img" />
+                        <img src="/images/logo.png" alt="Logo" className="logo-img" />
                     </div>
                 </div>
                 <h2>Admin Login</h2>

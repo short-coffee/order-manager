@@ -21,7 +21,7 @@ const OrderSuccessPage = () => {
 
         // Play confirmation sound
         try {
-            const audio = new Audio('/confirm.mp3');
+            const audio = new Audio('/sounds/confirm.mp3');
             audio.play().catch(error => console.log('Audio playback failed:', error));
         } catch (error) {
             console.error('Audio initialization error:', error);

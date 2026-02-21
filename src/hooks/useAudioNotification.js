@@ -5,7 +5,7 @@ let globalAudioUnlocked = false;
 
 export const useAudioNotification = () => {
     if (!audioInstance) {
-        audioInstance = new Audio('/sound.mp3');
+        audioInstance = new Audio('/sounds/sound.mp3');
     }
 
     const [showAudioModal, setShowAudioModal] = useState(!globalAudioUnlocked);
@@ -21,7 +21,7 @@ export const useAudioNotification = () => {
 
     const enableAudio = () => {
         if (!audioInstance) return;
-        
+
         // Play and immediately pause to unlock audio context without sound
         audioInstance.volume = 0;
         audioInstance.play().then(() => {

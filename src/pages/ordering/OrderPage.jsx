@@ -106,7 +106,7 @@ const OrderPage = () => {
             {/* Simple Minimal Header */}
             <header className="minimal-header">
                 <div className="header-container animate-fade-in">
-                    <img src="/logo.png" alt="Black Bear Logo" className="minimal-logo" />
+                    <img src="/images/logo.png" alt="Black Bear Logo" className="minimal-logo" />
                     <div className="header-text">
                         <h1>BLACK BEAR</h1>
                         <p>COFFEE BAR</p>
@@ -137,7 +137,7 @@ const OrderPage = () => {
             {/* Shop Closed Overlay */}
             <div className={`shop-closed-overlay ${!isShopOpen ? 'visible' : ''}`}>
                 <div className="closed-content premium-card">
-                    <img src="/logo.png" alt="Black Bear Logo" className="closed-logo" />
+                    <img src="/images/logo.png" alt="Black Bear Logo" className="closed-logo" />
                     <h2>Είμαστε Κλειστά</h2>
                     <p>Αυτή τη στιγμή δεν δεχόμαστε νέες παραγγελίες. <br /> Παρακαλούμε δοκιμάστε αργότερα!</p>
                     <div className="closed-hours">Σας ευχαριστούμε για την προτίμηση!</div>
