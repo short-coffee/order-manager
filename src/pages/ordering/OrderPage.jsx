@@ -135,16 +135,14 @@ const OrderPage = () => {
             </div>
 
             {/* Shop Closed Overlay */}
-            {!isShopOpen && (
-                <div className="shop-closed-overlay animate-fade-in">
-                    <div className="closed-content premium-card">
-                        <img src="/logo.png" alt="Black Bear Logo" className="closed-logo" />
-                        <h2>Είμαστε Κλειστά</h2>
-                        <p>Αυτή τη στιγμή δεν δεχόμαστε νέες παραγγελίες. <br /> Παρακαλούμε δοκιμάστε αργότερα!</p>
-                        <div className="closed-hours">Σας ευχαριστούμε για την προτίμηση!</div>
-                    </div>
+            <div className={`shop-closed-overlay ${!isShopOpen ? 'visible' : ''}`}>
+                <div className="closed-content premium-card">
+                    <img src="/logo.png" alt="Black Bear Logo" className="closed-logo" />
+                    <h2>Είμαστε Κλειστά</h2>
+                    <p>Αυτή τη στιγμή δεν δεχόμαστε νέες παραγγελίες. <br /> Παρακαλούμε δοκιμάστε αργότερα!</p>
+                    <div className="closed-hours">Σας ευχαριστούμε για την προτίμηση!</div>
                 </div>
-            )}
+            </div>
 
             {/* Menu Sections */}
             <main className="order-main">
