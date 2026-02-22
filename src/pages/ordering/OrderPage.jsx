@@ -78,15 +78,32 @@ const OrderPage = () => {
         // Wrapper to check shop status and handle customization modal trigger
         if (!isShopOpen) return;
 
-        // Check if item needs customization (only coffee for now)
-        const needsCustomization = item.category === 'coffee';
+        // Check if item needs customization
+        const isCoffee = item.category === 'coffee' && item.name !== 'Φίλτρου με γεύση';
+        const isFlavoredCoffee = item.category === 'coffee' && item.name === 'Φίλτρου με γεύση';
+        const isFlavoredChocolate = item.category === 'chocolates' && item.name === 'Σοκολάτα με γεύση';
+        const isChocolate = item.category === 'chocolates' && item.name.includes('(ζεστή-κρύα)') && !isFlavoredChocolate;
+        const isSmoothieOrGranita = item.name === 'Smoothies' || item.name === 'Γρανίτες';
+        const isMilkshake = item.name === 'Milkshake';
+        const isHotTea = item.name === 'Τσάι Ζεστό';
+        const isIceTea = item.name === 'Ice Tea';
+        const isIceCream = item.name === 'Παγωτό';
+        const isToast = item.name === 'Τοστ' || item.name === 'Τόστ';
+        const isBaguette = item.name === 'Μπακέτα';
+
+        const needsCustomization = isCoffee || isChocolate || isFlavoredCoffee || isFlavoredChocolate || isSmoothieOrGranita || isMilkshake || isHotTea || isIceTea || isIceCream || isToast || isBaguette;
 
         if (needsCustomization && !options) {
             setCustomizingProduct(item);
             return;
         }
 
-        addToCart(item, options, isShopOpen);
+        let itemToAdd = { ...item };
+        if (options && options.extraPrice) {
+            itemToAdd.price = parseFloat(itemToAdd.price) + options.extraPrice;
+        }
+
+        addToCart(itemToAdd, options, isShopOpen);
         setCustomizingProduct(null);
     };
 

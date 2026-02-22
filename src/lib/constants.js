@@ -1,33 +1,25 @@
 export const CATEGORY_MAPPING = {
     'coffee': 'Καφέδες',
-    'chocolate': 'Σοκολάτες',
+    'chocolates': 'Σοκολάτες',
+    'rofimata': 'Ροφήματα',
     'tea': 'Τσάι',
+    'beverages': 'Αναψυκτικά/Νερά',
+    'juice': 'Χυμοί',
     'snacks': 'Σνακ',
-    'food': 'Φαγητό',
-    'desserts': 'Γλυκά/Παγωτά',
-    'ice-tea': 'Ice Tea',
-    'granites': 'Γρανίτες',
-    'smoothies': 'Smoothies',
-    'soft-drinks': 'Αναψυκτικά',
-    'beer': 'Μπύρες',
-    'wine': 'Κρασιά',
-    'drinks': 'Ποτά'
+    'sweets': 'Γλυκά/Παγωτά',
+    'donuts': 'Ντόνατς'
 };
 
 export const CATEGORY_ORDER = [
     'coffee',
-    'chocolate',
+    'chocolates',
+    'rofimata',
     'tea',
-    'ice-tea',
-    'granites',
-    'smoothies',
-    'soft-drinks',
-    'beer',
-    'wine',
-    'drinks',
+    'beverages',
+    'juice',
     'snacks',
-    'desserts',
-    'food'
+    'sweets',
+    'donuts'
 ];
 
 export const STATUS_MAPPING = {

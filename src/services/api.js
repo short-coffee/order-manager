@@ -55,31 +55,44 @@ export const api = {
     },
 
     submitOrder: async (orderData, cartItems) => {
-        // 1. Insert Order
-        const { data: newOrder, error: orderError } = await supabase
-            .from('orders')
-            .insert([orderData])
-            .select()
-            .single();
+        try {
+            // 1. Insert Order
+            const { data: newOrder, error: orderError } = await supabase
+                .from('orders')
+                .insert([orderData])
+                .select()
+                .single();
 
-        if (orderError) throw orderError;
+            if (orderError) {
+                console.error('[API] Order Insert Error:', orderError);
+                throw orderError;
+            }
 
-        // 2. Insert Items
-        const orderItems = cartItems.map(item => ({
-            order_id: newOrder.id,
-            product_name: item.name,
-            quantity: item.quantity,
-            price: item.price,
-            options: item.options
-        }));
+            // 2. Insert Items
+            const orderItems = cartItems.map(item => ({
+                order_id: newOrder.id,
+                product_name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+                options: item.options
+            }));
 
-        const { error: itemsError } = await supabase
-            .from('order_items')
-            .insert(orderItems);
+            console.log('[API] Attempting to insert order items:', orderItems);
 
-        if (itemsError) throw itemsError;
+            const { error: itemsError } = await supabase
+                .from('order_items')
+                .insert(orderItems);
 
-        return newOrder;
+            if (itemsError) {
+                console.error('[API] Items Insert Error:', itemsError);
+                throw itemsError;
+            }
+
+            return newOrder;
+        } catch (err) {
+            console.error('[API] submitOrder Caught Exception:', err);
+            throw err;
+        }
     },
 
     subscribeToOrders: (callback) => {

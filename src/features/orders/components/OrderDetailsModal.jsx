@@ -40,16 +40,71 @@ const OrderDetailsModal = ({ order, onClose }) => {
                                             <span className="name">{item.product_name || item.name}</span>
                                             {item.options && (
                                                 <div className="options">
-                                                    {item.options.sugar && <span>• {
-                                                        item.options.sugar === 'none' ? 'Σκέτος' :
-                                                            item.options.sugar === 'medium' ? 'Μέτριος' :
-                                                                item.options.sugar === 'sweet' ? 'Γλυκός' :
-                                                                    item.options.sugar === 'little' ? 'Με ολίγη' :
-                                                                        item.options.sugar === 'saccharin' ? 'Ζαχαρίνη' :
-                                                                            item.options.sugar === 'stevia' ? 'Στέβια' :
-                                                                                item.options.sugar === 'brown' ? 'Μαύρη' : item.options.sugar
+                                                    {item.options.sugar && item.options.sugar !== 'none' && <span>• {
+                                                        item.options.sugar === 'medium' ? 'Μέτριος' :
+                                                            item.options.sugar === 'sweet' ? 'Γλυκός' :
+                                                                item.options.sugar === 'little' ? 'Με ολίγη' :
+                                                                    item.options.sugar === 'saccharin' ? 'Ζαχαρίνη' :
+                                                                        item.options.sugar === 'stevia' ? 'Στέβια' :
+                                                                            item.options.sugar === 'brown' ? 'Μαύρη' : item.options.sugar
                                                     }</span>}
+                                                    {item.options.sugar === 'none' && <span>• Σκέτος</span>}
                                                     {item.options.decaf && <span>• Decaf</span>}
+                                                    {item.options.temperature && <span>• {item.options.temperature === 'hot' ? 'Ζεστή' : 'Κρύα'}</span>}
+                                                    {item.options.flavor && (
+                                                        <span className="detail-tag flavor" style={{ backgroundColor: '#fdf3de', color: '#b56d19', border: '1px solid #ead09e', fontWeight: 'bold' }}>
+                                                            {item.options.flavor === 'caramel' ? 'ΚΑΡΑΜΕΛΑ' :
+                                                                item.options.flavor === 'strawberry' ? 'ΦΡΑΟΥΛΑ' :
+                                                                    item.options.flavor === 'hazelnut' ? 'ΦΟΥΝΤΟΥΚΙ' :
+                                                                        item.options.flavor === 'vanilla' ? 'ΒΑΝΙΛΙΑ' :
+                                                                            item.options.flavor === 'coconut' ? 'ΚΑΡΥΔΑ' :
+                                                                                item.options.flavor === 'raspberry' ? 'ΒΑΤΟΜΟΥΡΟ' :
+                                                                                    item.options.flavor === 'banana' ? 'ΜΠΑΝΑΝΑ' :
+                                                                                        item.options.flavor === 'passion_fruit' ? 'PASSION FRUIT' :
+                                                                                            item.options.flavor === 'lime' ? 'LIME' :
+                                                                                                item.options.flavor === 'chocolate' ? 'ΣΟΚΟΛΑΤΑ' :
+                                                                                                    item.options.flavor === 'stracciatella' ? 'ΣΤΡΑΤΣΙΑΤΕΛΑ' :
+                                                                                                        item.options.flavor === 'amarena' ? 'ΑΜΑΡΕΝΑ' :
+                                                                                                            item.options.flavor === 'banoffee' ? 'ΜΠΑΝΟΦΙ' :
+                                                                                                                item.options.flavor === 'cookies' ? 'COOKIES' :
+                                                                                                                    item.options.flavor === 'bueno' ? 'BUENO' :
+                                                                                                                        item.options.flavor === 'jasmine' ? 'ΓΙΑΣΕΜΙ' :
+                                                                                                                            item.options.flavor === 'mint' ? 'ΜΕΝΤΑ' :
+                                                                                                                                item.options.flavor === 'lemon' ? 'ΛΕΜΟΝΙ' :
+                                                                                                                                    item.options.flavor === 'orange' ? 'ΠΟΡΤΟΚΑΛΙ' :
+                                                                                                                                        item.options.flavor === 'green' ? 'ΠΡΑΣΙΝΟ' :
+                                                                                                                                            item.options.flavor === 'cinnamon' ? 'ΚΑΝΕΛΑ' :
+                                                                                                                                                item.options.flavor === 'english_breakfast' ? 'ENGLISH BREAKFAST' :
+                                                                                                                                                    item.options.flavor === 'peach' ? 'ΡΟΔΑΚΙΝΟ' :
+                                                                                                                                                        item.options.flavor === 'green_sugar_free' ? 'ΠΡΑΣΙΝΟ ΧΩΡΙΣ ΖΑΧΑΡΗ' :
+                                                                                                                                                            item.options.flavor === 'cheese_turkey' ? 'ΤΥΡΙ-ΓΑΛΟΠΟΥΛΑ' :
+                                                                                                                                                                item.options.flavor === 'cheese_ham' ? 'ΤΥΡΙ-ΖΑΜΠΟΝ' :
+                                                                                                                                                                    item.options.flavor === 'cheese' ? 'ΣΚΕΤΟ ΤΥΡΙ' :
+                                                                                                                                                                        item.options.flavor === 'turkey' ? 'ΣΚΕΤΗ ΓΑΛΟΠΟΥΛΑ' :
+                                                                                                                                                                            item.options.flavor === 'ham' ? 'ΣΚΕΤΟ ΖΑΜΠΟΝ' :
+                                                                                                                                                                                item.options.flavor === 'baguette_turkey' ? 'ΓΑΛΟΠΟΥΛΑ, ΤΥΡΙ, ΝΤΟΜ., ΜΑΡ., ΜΑΓΙΟΝΕΖΑ' :
+                                                                                                                                                                                    item.options.flavor === 'baguette_ham' ? 'ΖΑΜΠΟΝ, ΤΥΡΙ, ΝΤΟΜ., ΜΑΡ., ΜΑΓΙΟΝΕΖΑ' : item.options.flavor}
+                                                        </span>
+                                                    )}
+                                                    {item.options.extraScoops && item.options.extraScoops.map((scoop, index) => (
+                                                        <span key={index} className="detail-tag flavor extra-scoop" style={{ border: '1px solid #ead09e', backgroundColor: '#fdf3de', color: '#b56d19', fontWeight: 'bold' }}>
+                                                            + {scoop === 'caramel' ? 'ΚΑΡΑΜΕΛΑ' :
+                                                                scoop === 'strawberry' ? 'ΦΡΑΟΥΛΑ' :
+                                                                    scoop === 'hazelnut' ? 'ΦΟΥΝΤΟΥΚΙ' :
+                                                                        scoop === 'vanilla' ? 'ΒΑΝΙΛΙΑ' :
+                                                                            scoop === 'coconut' ? 'ΚΑΡΥΔΑ' :
+                                                                                scoop === 'raspberry' ? 'ΒΑΤΟΜΟΥΡΟ' :
+                                                                                    scoop === 'banana' ? 'ΜΠΑΝΑΝΑ' :
+                                                                                        scoop === 'passion_fruit' ? 'PASSION FRUIT' :
+                                                                                            scoop === 'lime' ? 'LIME' :
+                                                                                                scoop === 'chocolate' ? 'ΣΟΚΟΛΑΤΑ' :
+                                                                                                    scoop === 'stracciatella' ? 'ΣΤΡΑΤΣΙΑΤΕΛΑ' :
+                                                                                                        scoop === 'amarena' ? 'ΑΜΑΡΕΝΑ' :
+                                                                                                            scoop === 'banoffee' ? 'ΜΠΑΝΟΦΙ' :
+                                                                                                                scoop === 'cookies' ? 'COOKIES' :
+                                                                                                                    scoop === 'bueno' ? 'BUENO' : scoop}
+                                                        </span>
+                                                    ))}
                                                 </div>
                                             )}
                                         </div>
