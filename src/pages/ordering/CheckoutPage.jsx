@@ -21,6 +21,9 @@ const CheckoutPage = () => {
     });
 
     useEffect(() => {
+        // Auto-scroll to top on mobile
+        window.scrollTo(0, 0);
+
         // Guard: Αν δεν υπάρχει καλάθι
         if (cart.length === 0) {
             navigate('/');

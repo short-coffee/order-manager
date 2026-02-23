@@ -39,18 +39,18 @@ const OrderDetailsModal = ({ order, onClose }) => {
                                         <div className="name-options">
                                             <span className="name">{item.product_name || item.name}</span>
                                             {item.options && (
-                                                <div className="options">
-                                                    {item.options.sugar && item.options.sugar !== 'none' && <span>• {
-                                                        item.options.sugar === 'medium' ? 'Μέτριος' :
-                                                            item.options.sugar === 'sweet' ? 'Γλυκός' :
-                                                                item.options.sugar === 'little' ? 'Με ολίγη' :
-                                                                    item.options.sugar === 'saccharin' ? 'Ζαχαρίνη' :
-                                                                        item.options.sugar === 'stevia' ? 'Στέβια' :
-                                                                            item.options.sugar === 'brown' ? 'Μαύρη' : item.options.sugar
+                                                <div className="order-item-options-admin" style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' }}>
+                                                    {item.options.sugar && item.options.sugar !== 'none' && <span className={`sugar-tag ${item.options.sugar}`}>{
+                                                        item.options.sugar === 'medium' ? 'ΜΕΤΡΙΟΣ' :
+                                                            item.options.sugar === 'sweet' ? 'ΓΛΥΚΟΣ' :
+                                                                item.options.sugar === 'little' ? 'ΜΕ ΟΛΙΓΗ' :
+                                                                    item.options.sugar === 'saccharin' ? 'ΖΑΧΑΡΙΝΗ' :
+                                                                        item.options.sugar === 'stevia' ? 'ΣΤΕΒΙΑ' :
+                                                                            item.options.sugar === 'brown' ? 'ΜΑΥΡΗ' : item.options.sugar
                                                     }</span>}
-                                                    {item.options.sugar === 'none' && <span>• Σκέτος</span>}
-                                                    {item.options.decaf && <span>• Decaf</span>}
-                                                    {item.options.temperature && <span>• {item.options.temperature === 'hot' ? 'Ζεστή' : 'Κρύα'}</span>}
+                                                    {item.options.sugar === 'none' && <span className="sugar-tag none">ΣΚΕΤΟΣ</span>}
+                                                    {item.options.decaf && <span className="decaf-tag">DECAF</span>}
+                                                    {item.options.temperature && <span className="temp-tag" style={{ border: '1px solid var(--primary)', color: 'var(--primary)', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>{item.options.temperature === 'hot' ? 'ΖΕΣΤΗ' : 'ΚΡΥΑ'}</span>}
                                                     {item.options.flavor && (
                                                         <span className="detail-tag flavor" style={{ backgroundColor: '#fdf3de', color: '#b56d19', border: '1px solid #ead09e', fontWeight: 'bold' }}>
                                                             {item.options.flavor === 'caramel' ? 'ΚΑΡΑΜΕΛΑ' :

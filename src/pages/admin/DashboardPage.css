@@ -502,6 +502,14 @@
     color: #c62828;
 }
 
+.details-modal .sugar-tag,
+.details-modal .decaf-tag,
+.details-modal .temp-tag,
+.details-modal .detail-tag {
+    font-size: 0.9rem !important;
+    padding: 0.2rem 0.5rem !important;
+}
+
 .order-comments {
     margin-top: 0.5rem;
     padding: 0.6rem;
