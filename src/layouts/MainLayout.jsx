@@ -90,8 +90,8 @@ const MainLayout = ({ children }) => {
                     style={{ cursor: 'pointer' }}
                     title="Reload Dashboard"
                 >
-                    <img src="/images/favicon.png" alt="Black Bear Logo" className="dashboard-logo" />
-                    <h2 className="brand-name">BLACK BEAR</h2>
+                    <img src="/images/logo.png" alt="Short Coffee Logo" className="dashboard-logo" />
+                    <h2 className="brand-name">SHORT COFFEE</h2>
                 </div>
 
                 <div className="nav-links">

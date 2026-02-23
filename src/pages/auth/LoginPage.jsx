@@ -50,7 +50,7 @@ const LoginPage = () => {
                 {fallingItems.map(item => (
                     <img
                         key={item.id}
-                        src={item.type === 'icon' ? '/images/favicon.png' : '/images/bean.png'}
+                        src={item.type === 'icon' ? '/images/logo.png' : '/images/bean.png'}
                         className="falling-bean"
                         style={{
                             left: item.left,
