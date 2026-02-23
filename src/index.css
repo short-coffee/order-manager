@@ -157,6 +157,21 @@ body {
   box-shadow: 0 5px 15px rgba(255, 59, 48, 0.3);
 }
 
+/* Tablet Media Queries for Admin Layout */
+@media (max-width: 1250px) {
+  .app-nav {
+    padding: 0 2rem;
+  }
+
+  .profile-badge {
+    display: none !important;
+  }
+
+  .nav-logo h2.brand-name {
+    white-space: nowrap;
+  }
+}
+
 /* Main Content Area */
 .main-content {
   padding: 2rem 4rem;
