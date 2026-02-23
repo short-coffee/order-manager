@@ -28,7 +28,6 @@
     height: 60px;
     width: auto;
     object-fit: contain;
-    border: 3px solid #000;
     border-radius: 8px;
 }
 
@@ -332,7 +331,6 @@
 
     .minimal-logo {
         height: 45px;
-        border-width: 2px;
     }
 
     .header-text h1 {
