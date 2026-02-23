@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "keywords": [],
-  "author": "Panagiotis Ntovonis",
+  "author": "Panagiotis Ntovonis - Fotios Apostolou",
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.96.0",
