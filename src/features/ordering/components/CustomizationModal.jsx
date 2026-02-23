@@ -1,97 +1,26 @@
 import React, { useState } from 'react';
 import './CustomizationModal.css';
-
-const SUGAR_OPTIONS = [
-    { id: 'none', label: 'ΣΚΕΤΟ' },
-    { id: 'medium', label: 'ΜΕΤΡΙΟ' },
-    { id: 'sweet', label: 'ΓΛΥΚΟ' },
-    { id: 'little', label: 'ΜΕ ΟΛΙΓΗ' },
-    { id: 'saccharin', label: 'ΖΑΧΑΡΙΝΗ' },
-    { id: 'stevia', label: 'ΣΤΕΒΙΑ' },
-    { id: 'brown', label: 'ΜΑΥΡΗ ΖΑΧΑΡΗ' }
-];
-
-const TEMP_OPTIONS = [
-    { id: 'hot', label: 'ΖΕΣΤΗ' },
-    { id: 'cold', label: 'ΚΡΥΑ' }
-];
-
-const FLAVOR_OPTIONS = [
-    { id: 'caramel', label: 'ΚΑΡΑΜΕΛΑ' },
-    { id: 'strawberry', label: 'ΦΡΑΟΥΛΑ' },
-    { id: 'hazelnut', label: 'ΦΟΥΝΤΟΥΚΙ' },
-    { id: 'vanilla', label: 'ΒΑΝΙΛΙΑ' },
-    { id: 'coconut', label: 'ΚΑΡΥΔΑ' }
-];
-
-const SMOOTHIE_FLAVOR_OPTIONS = [
-    { id: 'strawberry', label: 'ΦΡΑΟΥΛΑ' },
-    { id: 'raspberry', label: 'ΒΑΤΟΜΟΥΡΟ' },
-    { id: 'banana', label: 'ΜΠΑΝΑΝΑ' },
-    { id: 'passion_fruit', label: 'PASSION FRUIT' },
-    { id: 'lime', label: 'LIME' }
-];
-
-const MILKSHAKE_FLAVOR_OPTIONS = [
-    { id: 'vanilla', label: 'ΒΑΝΙΛΙΑ' },
-    { id: 'chocolate', label: 'ΣΟΚΟΛΑΤΑ' },
-    { id: 'stracciatella', label: 'ΣΤΡΑΤΣΙΑΤΕΛΑ' },
-    { id: 'amarena', label: 'ΑΜΑΡΕΝΑ' },
-    { id: 'banoffee', label: 'ΜΠΑΝΟΦΙ' },
-    { id: 'cookies', label: 'COOKIES' },
-    { id: 'bueno', label: 'BUENO' }
-];
-
-const HOT_TEA_FLAVOR_OPTIONS = [
-    { id: 'jasmine', label: 'ΓΙΑΣΕΜΙ' },
-    { id: 'mint', label: 'ΜΕΝΤΑ' },
-    { id: 'lemon', label: 'ΛΕΜΟΝΙ' },
-    { id: 'vanilla', label: 'ΒΑΝΙΛΙΑ' },
-    { id: 'orange', label: 'ΠΟΡΤΟΚΑΛΙ' },
-    { id: 'strawberry', label: 'ΦΡΑΟΥΛΑ' },
-    { id: 'green', label: 'ΠΡΑΣΙΝΟ' },
-    { id: 'cinnamon', label: 'ΚΑΝΕΛΑ' },
-    { id: 'english_breakfast', label: 'ENGLISH BREAKFAST' }
-];
-
-const ICE_TEA_FLAVOR_OPTIONS = [
-    { id: 'peach', label: 'ΡΟΔΑΚΙΝΟ' },
-    { id: 'lemon', label: 'ΛΕΜΟΝΙ' },
-    { id: 'green', label: 'ΠΡΑΣΙΝΟ' },
-    { id: 'green_sugar_free', label: 'ΠΡΑΣΙΝΟ ΧΩΡΙΣ ΖΑΧΑΡΗ' }
-];
-
-const TOAST_OPTIONS = [
-    { id: 'cheese_turkey', label: 'Τυρί - Γαλοπούλα' },
-    { id: 'cheese_ham', label: 'Τυρί - Ζαμπόν' },
-    { id: 'cheese', label: 'Σκέτο Τυρί' },
-    { id: 'turkey', label: 'Σκέτη Γαλοπούλα' },
-    { id: 'ham', label: 'Σκέτο Ζαμπόν' }
-];
-
-const BAGUETTE_OPTIONS = [
-    { id: 'baguette_turkey', label: 'Τυρί, Γαλοπούλα, Ντομάτα, Μαρούλι, Μαγιονέζα' },
-    { id: 'baguette_ham', label: 'Τυρί, Ζαμπόν, Ντομάτα, Μαρούλι, Μαγιονέζα' }
-];
-
-const BAGUETTE_INGREDIENTS = {
-    baguette_turkey: ['Τυρί', 'Γαλοπούλα', 'Ντομάτα', 'Μαρούλι', 'Μαγιονέζα'],
-    baguette_ham: ['Τυρί', 'Ζαμπόν', 'Ντομάτα', 'Μαρούλι', 'Μαγιονέζα']
-};
+import {
+    SUGAR_OPTIONS, TEMP_OPTIONS, FLAVOR_OPTIONS,
+    SMOOTHIE_FLAVOR_OPTIONS, MILKSHAKE_FLAVOR_OPTIONS,
+    HOT_TEA_FLAVOR_OPTIONS, ICE_TEA_FLAVOR_OPTIONS,
+    TOAST_OPTIONS, BAGUETTE_OPTIONS, BAGUETTE_INGREDIENTS
+} from '../../../lib/constants';
 
 
 const CustomizationModal = ({ product, onClose, onConfirm }) => {
-    const isCoffee = product.category === 'coffee' && product.name !== 'Φίλτρου με γεύση';
-    const isFlavoredCoffee = product.category === 'coffee' && product.name === 'Φίλτρου με γεύση';
-    const isFlavoredChocolate = product.category === 'chocolates' && product.name === 'Σοκολάτα με γεύση';
-    const isChocolate = product.category === 'chocolates' && product.name.includes('(ζεστή-κρύα)') && !isFlavoredChocolate;
-    const isSmoothieOrGranita = product.name === 'Smoothies' || product.name === 'Γρανίτες';
-    const isMilkshake = product.name === 'Milkshake';
-    const isHotTea = product.name === 'Τσάι Ζεστό';
-    const isIceTea = product.name === 'Ice Tea';
-    const isIceCream = product.name === 'Παγωτό';
-    const isToast = product.name === 'Τοστ' || product.name === 'Τόστ';
-    const isBaguette = product.name === 'Μπακέτα';
+    const isCoffee = product.category === 'coffee' && product.id !== 'coffee18';
+    const canHaveDecaf = ['coffee06', 'coffee07', 'coffee08', 'coffee09', 'coffee13'].includes(product.id);
+    const isFlavoredCoffee = product.category === 'coffee' && product.id === 'coffee18';
+    const isFlavoredChocolate = product.category === 'chocolates' && product.id === 'chocolates09';
+    const isChocolate = product.id === 'chocolates01' || product.id === 'chocolates02';
+    const isSmoothieOrGranita = product.id === 'rofimata03' || product.id === 'rofimata04';
+    const isMilkshake = product.id === 'rofimata05';
+    const isHotTea = product.id === 'tea01';
+    const isIceTea = product.id === 'tea02';
+    const isIceCream = product.id === 'sweets01';
+    const isToast = product.id === 'snacks03';
+    const isBaguette = product.id === 'snacks01';
 
     const [selectedSugar, setSelectedSugar] = useState('medium');
     const [isDecaf, setIsDecaf] = useState(false);
@@ -194,7 +123,7 @@ const CustomizationModal = ({ product, onClose, onConfirm }) => {
                     </div>
                 )}
 
-                {isCoffee && (
+                {canHaveDecaf && (
                     <div className="customization-section">
                         <div className="decaf-toggle-row">
                             <div>
