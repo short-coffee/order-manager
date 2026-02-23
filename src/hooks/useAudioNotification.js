@@ -5,7 +5,7 @@ let globalAudioUnlocked = false;
 
 export const useAudioNotification = () => {
     if (!audioInstance) {
-        audioInstance = new Audio('/sounds/sound.mp3');
+        audioInstance = new Audio('/sounds/new_order.mp3');
     }
 
     const [showAudioModal, setShowAudioModal] = useState(!globalAudioUnlocked);
