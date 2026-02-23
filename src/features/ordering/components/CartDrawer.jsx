@@ -77,8 +77,8 @@ const CartDrawer = ({ cart, onClose, onUpdate, onRemove, totalPrice, onCheckout 
                                                                                                                                                                 item.options.flavor === 'cheese' ? 'ΣΚΕΤΟ ΤΥΡΙ' :
                                                                                                                                                                     item.options.flavor === 'turkey' ? 'ΣΚΕΤΗ ΓΑΛΟΠΟΥΛΑ' :
                                                                                                                                                                         item.options.flavor === 'ham' ? 'ΣΚΕΤΟ ΖΑΜΠΟΝ' :
-                                                                                                                                                                            item.options.flavor === 'baguette_turkey' ? 'ΓΑΛΟΠΟΥΛΑ, ΤΥΡΙ, ΝΤΟΜ., ΜΑΡ., ΜΑΓΙΟΝΕΖΑ' :
-                                                                                                                                                                                item.options.flavor === 'baguette_ham' ? 'ΖΑΜΠΟΝ, ΤΥΡΙ, ΝΤΟΜ., ΜΑΡ., ΜΑΓΙΟΝΕΖΑ' : item.options.flavor}
+                                                                                                                                                                            item.options.flavor === 'baguette_turkey' ? 'ΓΑΛΟΠΟΥΛΑ, ΤΥΡΙ, ΝΤΟΜΑΤΑ, ΜΑΡΟΥΛΙ, ΜΑΓΙΟΝΕΖΑ' :
+                                                                                                                                                                                item.options.flavor === 'baguette_ham' ? 'ΖΑΜΠΟΝ, ΤΥΡΙ, ΝΤΟΜΑΤΑ, ΜΑΡΟΥΛΙ, ΜΑΓΙΟΝΕΖΑ' : item.options.flavor}
                                                     </span>
                                                 )}
                                                 {item.options.extraScoops && item.options.extraScoops.map((scoop, index) => (
@@ -98,6 +98,11 @@ const CartDrawer = ({ cart, onClose, onUpdate, onRemove, totalPrice, onCheckout 
                                                                                                         scoop === 'banoffee' ? 'ΜΠΑΝΟΦΙ' :
                                                                                                             scoop === 'cookies' ? 'COOKIES' :
                                                                                                                 scoop === 'bueno' ? 'BUENO' : scoop}
+                                                    </span>
+                                                ))}
+                                                {item.options.removedIngredients && item.options.removedIngredients.map((ing, index) => (
+                                                    <span key={`rm-${index}`} className="option-tag" style={{ backgroundColor: '#fce4e4', color: '#d9534f', border: '1px solid #f2dede' }}>
+                                                        ΧΩΡΙΣ {ing.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()}
                                                     </span>
                                                 ))}
                                             </div>

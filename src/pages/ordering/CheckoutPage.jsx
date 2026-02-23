@@ -175,8 +175,8 @@ const CheckoutPage = () => {
                                                                                                                                                         item.options.flavor === 'cheese' ? 'ΣΚΕΤΟ ΤΥΡΙ' :
                                                                                                                                                             item.options.flavor === 'turkey' ? 'ΣΚΕΤΗ ΓΑΛΟΠΟΥΛΑ' :
                                                                                                                                                                 item.options.flavor === 'ham' ? 'ΣΚΕΤΟ ΖΑΜΠΟΝ' :
-                                                                                                                                                                    item.options.flavor === 'baguette_turkey' ? 'ΓΑΛΟΠΟΥΛΑ, ΤΥΡΙ, ΝΤΟΜ., ΜΑΡ., ΜΑΓΙΟΝΕΖΑ' :
-                                                                                                                                                                        item.options.flavor === 'baguette_ham' ? 'ΖΑΜΠΟΝ, ΤΥΡΙ, ΝΤΟΜ., ΜΑΡ., ΜΑΓΙΟΝΕΖΑ' : item.options.flavor
+                                                                                                                                                                    item.options.flavor === 'baguette_turkey' ? 'ΓΑΛΟΠΟΥΛΑ, ΤΥΡΙ, ΝΤΟΜΑΤΑ, ΜΑΡΟΥΛΙ, ΜΑΓΙΟΝΕΖΑ' :
+                                                                                                                                                                        item.options.flavor === 'baguette_ham' ? 'ΖΑΜΠΟΝ, ΤΥΡΙ, ΝΤΟΜΑΤΑ, ΜΑΡΟΥΛΙ, ΜΑΓΙΟΝΕΖΑ' : item.options.flavor
                                             ) : null,
                                             ...(item.options.extraScoops || []).map(scoop =>
                                                 '+ ' + (scoop === 'caramel' ? 'ΚΑΡΑΜΕΛΑ' :
@@ -194,7 +194,8 @@ const CheckoutPage = () => {
                                                                                                 scoop === 'banoffee' ? 'ΜΠΑΝΟΦΙ' :
                                                                                                     scoop === 'cookies' ? 'COOKIES' :
                                                                                                         scoop === 'bueno' ? 'BUENO' : scoop)
-                                            )
+                                            ),
+                                            ...(item.options.removedIngredients || []).map(ing => `ΧΩΡΙΣ ${ing.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()}`)
                                         ].filter(Boolean).join(' • ')}
                                     </div>
                                 )}

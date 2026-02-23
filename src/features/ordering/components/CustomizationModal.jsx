@@ -74,6 +74,11 @@ const BAGUETTE_OPTIONS = [
     { id: 'baguette_ham', label: 'Τυρί, Ζαμπόν, Ντομάτα, Μαρούλι, Μαγιονέζα' }
 ];
 
+const BAGUETTE_INGREDIENTS = {
+    baguette_turkey: ['Τυρί', 'Γαλοπούλα', 'Ντομάτα', 'Μαρούλι', 'Μαγιονέζα'],
+    baguette_ham: ['Τυρί', 'Ζαμπόν', 'Ντομάτα', 'Μαρούλι', 'Μαγιονέζα']
+};
+
 
 const CustomizationModal = ({ product, onClose, onConfirm }) => {
     const isCoffee = product.category === 'coffee' && product.name !== 'Φίλτρου με γεύση';
@@ -100,6 +105,15 @@ const CustomizationModal = ({ product, onClose, onConfirm }) => {
     const [extraScoops, setExtraScoops] = useState([]);
     const [selectedToastOption, setSelectedToastOption] = useState('cheese_turkey');
     const [selectedBaguetteOption, setSelectedBaguetteOption] = useState('baguette_turkey');
+    const [removedIngredients, setRemovedIngredients] = useState([]);
+
+    const toggleIngredient = (ingredient) => {
+        if (removedIngredients.includes(ingredient)) {
+            setRemovedIngredients(removedIngredients.filter(i => i !== ingredient));
+        } else {
+            setRemovedIngredients([...removedIngredients, ingredient]);
+        }
+    };
 
     const handleConfirm = () => {
         if (isCoffee) {
@@ -148,7 +162,8 @@ const CustomizationModal = ({ product, onClose, onConfirm }) => {
             });
         } else if (isBaguette) {
             onConfirm({
-                flavor: selectedBaguetteOption
+                flavor: selectedBaguetteOption,
+                removedIngredients: removedIngredients.length > 0 ? removedIngredients : undefined
             });
         }
     };
@@ -396,21 +411,45 @@ const CustomizationModal = ({ product, onClose, onConfirm }) => {
                 )}
 
                 {isBaguette && (
-                    <div className="customization-section">
-                        <h4>Επιλογές Μπακέτας</h4>
-                        <div className="sugar-grid" style={{ gridTemplateColumns: 'minmax(120px, 1fr)' }}>
-                            {BAGUETTE_OPTIONS.map(opt => (
-                                <button
-                                    key={opt.id}
-                                    className={`sugar-btn ${selectedBaguetteOption === opt.id ? 'active' : ''}`}
-                                    style={{ whiteSpace: 'normal', height: 'auto', padding: '12px' }}
-                                    onClick={() => setSelectedBaguetteOption(opt.id)}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
+                    <>
+                        <div className="customization-section">
+                            <h4>Επιλογές Μπακέτας</h4>
+                            <div className="sugar-grid" style={{ gridTemplateColumns: 'minmax(120px, 1fr)' }}>
+                                {BAGUETTE_OPTIONS.map(opt => (
+                                    <button
+                                        key={opt.id}
+                                        className={`sugar-btn ${selectedBaguetteOption === opt.id ? 'active' : ''}`}
+                                        style={{ whiteSpace: 'normal', height: 'auto', padding: '12px' }}
+                                        onClick={() => {
+                                            setSelectedBaguetteOption(opt.id);
+                                            setRemovedIngredients([]);
+                                        }}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                        <div className="customization-section">
+                            <h4>Χωρίς (Αφαίρεση Υλικών)</h4>
+                            <div className="sugar-grid">
+                                {BAGUETTE_INGREDIENTS[selectedBaguetteOption].map(ingredient => (
+                                    <button
+                                        key={ingredient}
+                                        className={`sugar-btn ${removedIngredients.includes(ingredient) ? 'active' : ''}`}
+                                        style={{
+                                            backgroundColor: removedIngredients.includes(ingredient) ? '#d9534f' : '',
+                                            color: removedIngredients.includes(ingredient) ? 'white' : '',
+                                            borderColor: removedIngredients.includes(ingredient) ? '#d9534f' : ''
+                                        }}
+                                        onClick={() => toggleIngredient(ingredient)}
+                                    >
+                                        Χωρίς {ingredient}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </>
                 )}
 
                 <div className="modal-actions-cust">

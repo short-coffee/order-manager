@@ -82,8 +82,8 @@ const OrderDetailsModal = ({ order, onClose }) => {
                                                                                                                                                                     item.options.flavor === 'cheese' ? 'ΣΚΕΤΟ ΤΥΡΙ' :
                                                                                                                                                                         item.options.flavor === 'turkey' ? 'ΣΚΕΤΗ ΓΑΛΟΠΟΥΛΑ' :
                                                                                                                                                                             item.options.flavor === 'ham' ? 'ΣΚΕΤΟ ΖΑΜΠΟΝ' :
-                                                                                                                                                                                item.options.flavor === 'baguette_turkey' ? 'ΓΑΛΟΠΟΥΛΑ, ΤΥΡΙ, ΝΤΟΜ., ΜΑΡ., ΜΑΓΙΟΝΕΖΑ' :
-                                                                                                                                                                                    item.options.flavor === 'baguette_ham' ? 'ΖΑΜΠΟΝ, ΤΥΡΙ, ΝΤΟΜ., ΜΑΡ., ΜΑΓΙΟΝΕΖΑ' : item.options.flavor}
+                                                                                                                                                                                item.options.flavor === 'baguette_turkey' ? 'ΓΑΛΟΠΟΥΛΑ, ΤΥΡΙ, ΝΤΟΜΑΤΑ, ΜΑΡΟΥΛΙ, ΜΑΓΙΟΝΕΖΑ' :
+                                                                                                                                                                                    item.options.flavor === 'baguette_ham' ? 'ΖΑΜΠΟΝ, ΤΥΡΙ, ΝΤΟΜΑΤΑ, ΜΑΡΟΥΛΙ, ΜΑΓΙΟΝΕΖΑ' : item.options.flavor}
                                                         </span>
                                                     )}
                                                     {item.options.extraScoops && item.options.extraScoops.map((scoop, index) => (
@@ -103,6 +103,11 @@ const OrderDetailsModal = ({ order, onClose }) => {
                                                                                                             scoop === 'banoffee' ? 'ΜΠΑΝΟΦΙ' :
                                                                                                                 scoop === 'cookies' ? 'COOKIES' :
                                                                                                                     scoop === 'bueno' ? 'BUENO' : scoop}
+                                                        </span>
+                                                    ))}
+                                                    {item.options.removedIngredients && item.options.removedIngredients.map((ing, index) => (
+                                                        <span key={`rm-${index}`} className="detail-tag flavor" style={{ border: '1px solid #f2dede', backgroundColor: '#fce4e4', color: '#d9534f', fontWeight: 'bold' }}>
+                                                            ΧΩΡΙΣ {ing.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()}
                                                         </span>
                                                     ))}
                                                 </div>
