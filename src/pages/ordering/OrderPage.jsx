@@ -4,7 +4,7 @@ import { useDraggableScroll } from '../../hooks/useDraggableScroll';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
-import { CATEGORY_MAPPING, CATEGORY_ORDER } from '../../lib/constants';
+import { CATEGORY_MAPPING, CATEGORY_ORDER, needsCustomization } from '../../lib/constants';
 import MenuGrid from '../../features/ordering/components/MenuGrid';
 import CartDrawer from '../../features/ordering/components/CartDrawer';
 import CustomizationModal from '../../features/ordering/components/CustomizationModal';
@@ -28,6 +28,7 @@ const OrderPage = () => {
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [isShopOpen, setIsShopOpen] = useState(true);
     const [customizingProduct, setCustomizingProduct] = useState(null);
     const { ref: categoryBarRef, isDragging, events: dragEvents } = useDraggableScroll();
@@ -42,8 +43,9 @@ const OrderPage = () => {
             const isEnabled = await api.getShopStatus();
             setIsShopOpen(isEnabled);
 
-        } catch (error) {
-            console.error('Error fetching initial data:', error);
+        } catch (err) {
+            console.error('Error fetching initial data:', err);
+            setError('Αδυναμία φόρτωσης καταλόγου. Παρακαλώ ανανεώστε τη σελίδα.');
         } finally {
             setLoading(false);
         }
@@ -78,22 +80,7 @@ const OrderPage = () => {
         // Wrapper to check shop status and handle customization modal trigger
         if (!isShopOpen) return;
 
-        // Check if item needs customization
-        const isCoffee = item.category === 'coffee' && item.name !== 'Φίλτρου με γεύση';
-        const isFlavoredCoffee = item.category === 'coffee' && item.name === 'Φίλτρου με γεύση';
-        const isFlavoredChocolate = item.category === 'chocolates' && item.name === 'Σοκολάτα με γεύση';
-        const isChocolate = item.category === 'chocolates' && item.name.includes('(ζεστή-κρύα)') && !isFlavoredChocolate;
-        const isSmoothieOrGranita = item.name === 'Smoothies' || item.name === 'Γρανίτες';
-        const isMilkshake = item.name === 'Milkshake';
-        const isHotTea = item.name === 'Τσάι Ζεστό';
-        const isIceTea = item.name === 'Ice Tea';
-        const isIceCream = item.name === 'Παγωτό';
-        const isToast = item.name === 'Τοστ' || item.name === 'Τόστ';
-        const isBaguette = item.name === 'Μπακέτα';
-
-        const needsCustomization = isCoffee || isChocolate || isFlavoredCoffee || isFlavoredChocolate || isSmoothieOrGranita || isMilkshake || isHotTea || isIceTea || isIceCream || isToast || isBaguette;
-
-        if (needsCustomization && !options) {
+        if (needsCustomization(item) && !options) {
             setCustomizingProduct(item);
             return;
         }
@@ -107,6 +94,19 @@ const OrderPage = () => {
         setCustomizingProduct(null);
     };
 
+    if (error) {
+        return (
+            <div className="order-page-root">
+                <main className="order-main error-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', padding: '20px', textAlign: 'center' }}>
+                    <h2 style={{ color: 'var(--accent-orange)', marginBottom: '10px' }}>Ωχ! Κάτι πήγε στραβά.</h2>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>{error}</p>
+                    <button className="add-btn" onClick={() => window.location.reload()}>
+                        Ανανέωση Σελίδας
+                    </button>
+                </main>
+            </div>
+        );
+    }
 
     if (loading) {
         return (

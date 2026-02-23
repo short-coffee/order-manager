@@ -68,6 +68,25 @@
     transform: rotate(90deg);
 }
 
+.modal-body-cust {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+    /* For scrollbar breathing room */
+    /* Custom scrollbar for webkit */
+    scrollbar-width: thin;
+    scrollbar-color: #d1d1d6 transparent;
+}
+
+.modal-body-cust::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body-cust::-webkit-scrollbar-thumb {
+    background-color: #d1d1d6;
+    border-radius: 10px;
+}
+
 .customization-section {
     margin-bottom: 2.5rem;
 }

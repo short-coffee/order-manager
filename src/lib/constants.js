@@ -108,3 +108,57 @@ export const BAGUETTE_INGREDIENTS = {
     baguette_turkey: ['Τυρί', 'Γαλοπούλα', 'Ντομάτα', 'Μαρούλι', 'Μαγιονέζα'],
     baguette_ham: ['Τυρί', 'Ζαμπόν', 'Ντομάτα', 'Μαρούλι', 'Μαγιονέζα']
 };
+
+export const checkIsCoffee = (product) => product.category === 'coffee' && product.id !== 'coffee18';
+export const checkCanHaveDecaf = (product) => ['coffee06', 'coffee07', 'coffee08', 'coffee09', 'coffee13'].includes(product.id);
+export const checkIsFlavoredCoffee = (product) => product.category === 'coffee' && product.id === 'coffee18';
+export const checkIsFlavoredChocolate = (product) => product.category === 'chocolates' && product.id === 'chocolates09';
+export const checkIsChocolate = (product) => product.id === 'chocolates01' || product.id === 'chocolates02';
+export const checkIsSmoothieOrGranita = (product) => product.id === 'rofimata03' || product.id === 'rofimata04';
+export const checkIsMilkshake = (product) => product.id === 'rofimata05';
+export const checkIsHotTea = (product) => product.id === 'tea01';
+export const checkIsIceTea = (product) => product.id === 'tea02';
+export const checkIsIceCream = (product) => product.id === 'sweets01';
+export const checkIsToast = (product) => product.id === 'snacks03';
+export const checkIsBaguette = (product) => product.id === 'snacks01';
+
+export const needsCustomization = (product) => {
+    return checkIsCoffee(product) ||
+        checkIsFlavoredCoffee(product) ||
+        checkIsFlavoredChocolate(product) ||
+        checkIsChocolate(product) ||
+        checkIsSmoothieOrGranita(product) ||
+        checkIsMilkshake(product) ||
+        checkIsHotTea(product) ||
+        checkIsIceTea(product) ||
+        checkIsIceCream(product) ||
+        checkIsToast(product) ||
+        checkIsBaguette(product);
+};
+
+export const getOptionLabel = (type, value) => {
+    if (!value) return null;
+
+    switch (type) {
+        case 'sugar':
+            return SUGAR_OPTIONS.find(opt => opt.id === value)?.label || value;
+        case 'temperature':
+            return TEMP_OPTIONS.find(opt => opt.id === value)?.label || value;
+        case 'flavor':
+            // Check all possible flavor lists
+            const allFlavors = [
+                ...FLAVOR_OPTIONS,
+                ...SMOOTHIE_FLAVOR_OPTIONS,
+                ...MILKSHAKE_FLAVOR_OPTIONS,
+                ...HOT_TEA_FLAVOR_OPTIONS,
+                ...ICE_TEA_FLAVOR_OPTIONS,
+                ...TOAST_OPTIONS,
+                ...BAGUETTE_OPTIONS
+            ];
+            return allFlavors.find(opt => opt.id === value)?.label || value;
+        case 'extraScoop':
+            return MILKSHAKE_FLAVOR_OPTIONS.find(opt => opt.id === value)?.label || value;
+        default:
+            return value;
+    }
+};
