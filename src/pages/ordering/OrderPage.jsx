@@ -12,7 +12,7 @@ import './OrderPage.css';
 
 const OrderPage = () => {
     const navigate = useNavigate();
-    const [selectedCategory, setSelectedCategory] = useState('coffee');
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     // Use Cart Hook
     const {
@@ -74,7 +74,15 @@ const OrderPage = () => {
         return a.localeCompare(b);
     });
 
-    const filteredItems = products.filter(item => item.category === selectedCategory);
+    const filteredItems = selectedCategory
+        ? products.filter(item => item.category === selectedCategory)
+        : products.filter(item => item.category === categories[0]);
+
+    useEffect(() => {
+        if (categories.length > 0 && !selectedCategory) {
+            setSelectedCategory(categories[0]);
+        }
+    }, [categories, selectedCategory]);
 
     const handleAddToCart = (item, options = null) => {
         // Wrapper to check shop status and handle customization modal trigger
