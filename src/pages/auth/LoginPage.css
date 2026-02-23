@@ -66,16 +66,12 @@
 }
 
 .logo-circle {
-    width: 80px;
-    height: 80px;
-    background: white;
-    border-radius: 12px;
-    border: 3px solid #000;
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
 .logo-img {
